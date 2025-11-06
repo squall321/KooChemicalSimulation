@@ -275,4 +275,14 @@ set_target_properties(test_phase53 PROPERTIES
     CXX_STANDARD_REQUIRED ON
 )
 
-message(STATUS "  - tests/unit (Phase 3-14, 16-26, 31-35, 36-40, 41-45, 51-53 tests added)")
+# Phase 54 test executable (GPU Reaction Kinetics)
+add_executable(test_phase54 test_phase54.cpp)
+target_link_libraries(test_phase54 PRIVATE koo_core koo_utils koo_gpu)
+
+# Set properties
+set_target_properties(test_phase54 PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+
+message(STATUS "  - tests/unit (Phase 3-14, 16-26, 31-35, 36-40, 41-45, 51-54 tests added)")
