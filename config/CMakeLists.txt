@@ -41,6 +41,10 @@ set(CONFIG_HEADERS
     include/config/Config.h
     include/config/parser/ConfigParser.h
     include/config/validator/ConfigValidator.h
+    include/config/schema/ConfigSchema.h
+    include/config/preset/ConfigPreset.h
+    include/config/env/ConfigEnvironment.h
+    include/config/util/ConfigUtil.h
 )
 
 # Group headers for IDE
@@ -53,4 +57,4 @@ add_subdirectory(validator)
 # Add alias for consistent naming
 add_library(Koo::Config ALIAS koo_config)
 
-message(STATUS "Config module configured (Phase 5 - configuration system complete)")
+message(STATUS "Config module configured (Phase 5, 36-40 complete - v3.0.0-alpha1)")
