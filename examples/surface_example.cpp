@@ -20,6 +20,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <memory>
 
 using namespace koo;
 
@@ -49,6 +50,12 @@ int main() {
 
     // Create surface coverage manager
     physics::surface::SurfaceCoverage coverage(siteDensity);
+
+    // Register species with coverage manager
+    coverage.addSpecies("CO", std::make_shared<physics::surface::SurfaceSpecies>(CO));
+    coverage.addSpecies("O", std::make_shared<physics::surface::SurfaceSpecies>(O));
+
+    // Set initial coverages
     coverage.setCoverage("CO", 0.3);   // Initial CO coverage
     coverage.setCoverage("O", 0.2);    // Initial O coverage
 
