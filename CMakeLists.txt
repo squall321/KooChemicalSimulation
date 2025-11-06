@@ -230,6 +230,12 @@ add_subdirectory(utils)
 # Applications
 add_subdirectory(apps)
 
+# Python bindings (Phase 56)
+option(ENABLE_PYTHON "Build Python bindings" ON)
+if(ENABLE_PYTHON)
+    add_subdirectory(python)
+endif()
+
 # Tests (if enabled)
 if(BUILD_TESTING)
     add_subdirectory(tests)
