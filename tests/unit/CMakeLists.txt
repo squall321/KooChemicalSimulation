@@ -254,3 +254,13 @@ set_target_properties(test_phase51 PROPERTIES
 )
 
 message(STATUS "  - tests/unit (Phase 3-14, 16-26, 31-35, 36-40, 41-45, 51 tests added)")
+
+# Phase 52 test executable (GPU Linear Algebra)
+add_executable(test_phase52 test_phase52.cpp)
+target_link_libraries(test_phase52 PRIVATE koo_core koo_utils koo_gpu)
+
+# Set properties
+set_target_properties(test_phase52 PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)

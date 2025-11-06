@@ -510,6 +510,19 @@ test_phase51/fast:
 .PHONY : test_phase51/fast
 
 #=============================================================================
+# Target rules for targets named test_phase52
+
+# Build rule for target.
+test_phase52: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_phase52
+.PHONY : test_phase52
+
+# fast build rule for target.
+test_phase52/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/CMakeFiles/test_phase52.dir/build.make tests/unit/CMakeFiles/test_phase52.dir/build
+.PHONY : test_phase52/fast
+
+#=============================================================================
 # Target rules for targets named reaction_example
 
 # Build rule for target.
@@ -586,6 +599,7 @@ help:
 	@echo "... test_phase41_45"
 	@echo "... test_phase5"
 	@echo "... test_phase51"
+	@echo "... test_phase52"
 	@echo "... test_phase6"
 	@echo "... test_phase7"
 	@echo "... test_phase8"

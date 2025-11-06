@@ -332,6 +332,7 @@
 /home/user/KooChemicalSimulation/tests/unit/CMakeFiles/test_phase36_40.dir
 /home/user/KooChemicalSimulation/tests/unit/CMakeFiles/test_phase41_45.dir
 /home/user/KooChemicalSimulation/tests/unit/CMakeFiles/test_phase51.dir
+/home/user/KooChemicalSimulation/tests/unit/CMakeFiles/test_phase52.dir
 /home/user/KooChemicalSimulation/tests/unit/CMakeFiles/test.dir
 /home/user/KooChemicalSimulation/tests/unit/CMakeFiles/edit_cache.dir
 /home/user/KooChemicalSimulation/tests/unit/CMakeFiles/rebuild_cache.dir

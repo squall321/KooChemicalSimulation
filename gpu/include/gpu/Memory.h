@@ -153,6 +153,16 @@ public:
     }
 
     /**
+     * @brief Copy to host vector
+     * @return Host vector
+     */
+    std::vector<T> toHost() const {
+        std::vector<T> result(size_);
+        copyToHost(result.data());
+        return result;
+    }
+
+    /**
      * @brief Copy data from another device memory
      * @param other Source device memory
      * @param count Number of elements (default: all)
