@@ -264,3 +264,15 @@ set_target_properties(test_phase52 PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON
 )
+
+# Phase 53 test executable (GPU Diffusion Solvers)
+add_executable(test_phase53 test_phase53.cpp)
+target_link_libraries(test_phase53 PRIVATE koo_core koo_utils koo_gpu)
+
+# Set properties
+set_target_properties(test_phase53 PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+
+message(STATUS "  - tests/unit (Phase 3-14, 16-26, 31-35, 36-40, 41-45, 51-53 tests added)")

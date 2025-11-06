@@ -162,6 +162,12 @@
   "output": "tests/unit/CMakeFiles/test_phase52.dir/test_phase52.cpp.o"
 },
 {
+  "directory": "/home/user/KooChemicalSimulation/tests/unit",
+  "command": "/usr/bin/c++ -DKOO_CPU_FALLBACK -I/home/user/KooChemicalSimulation -I/home/user/KooChemicalSimulation/core/include -I/home/user/KooChemicalSimulation/utils/include -I/home/user/KooChemicalSimulation/gpu/include -O3 -DNDEBUG -std=c++17 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Woverloaded-virtual -Wunused -O3 -march=native -o CMakeFiles/test_phase53.dir/test_phase53.cpp.o -c /home/user/KooChemicalSimulation/tests/unit/test_phase53.cpp",
+  "file": "/home/user/KooChemicalSimulation/tests/unit/test_phase53.cpp",
+  "output": "tests/unit/CMakeFiles/test_phase53.dir/test_phase53.cpp.o"
+},
+{
   "directory": "/home/user/KooChemicalSimulation/examples",
   "command": "/usr/bin/c++  -I/home/user/KooChemicalSimulation -I/home/user/KooChemicalSimulation/core/include -I/home/user/KooChemicalSimulation/utils/include -I/home/user/KooChemicalSimulation/chemistry/include -I/home/user/KooChemicalSimulation/io/include -O3 -DNDEBUG -std=c++17 -Wall -Wextra -Wpedantic -Wconversion -Wsign-conversion -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align -Woverloaded-virtual -Wunused -O3 -march=native -o CMakeFiles/reaction_example.dir/reaction_example.cpp.o -c /home/user/KooChemicalSimulation/examples/reaction_example.cpp",
   "file": "/home/user/KooChemicalSimulation/examples/reaction_example.cpp",

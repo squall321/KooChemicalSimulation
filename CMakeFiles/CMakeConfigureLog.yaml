@@ -1030,3 +1030,40 @@ events:
         
       exitCode: 2
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindHDF5.cmake:284 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindHDF5.cmake:614 (_HDF5_test_regular_compiler_CXX)"
+      - "CMakeLists.txt:150 (find_package)"
+    directories:
+      source: "/home/user/KooChemicalSimulation/CMakeFiles/CMakeScratch/TryCompile-pFoNC0"
+      binary: "/home/user/KooChemicalSimulation/CMakeFiles/CMakeScratch/TryCompile-pFoNC0"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "HDF5_CXX_COMPILER_NO_INTERROGATE"
+      cached: true
+      stdout: |
+        Change Dir: '/home/user/KooChemicalSimulation/CMakeFiles/CMakeScratch/TryCompile-pFoNC0'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_66706/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_66706.dir/build.make CMakeFiles/cmTC_66706.dir/build
+        gmake[1]: Entering directory '/home/user/KooChemicalSimulation/CMakeFiles/CMakeScratch/TryCompile-pFoNC0'
+        Building CXX object CMakeFiles/cmTC_66706.dir/cmake_hdf5_test.cxx.o
+        /usr/bin/c++   -std=c++17 -o CMakeFiles/cmTC_66706.dir/cmake_hdf5_test.cxx.o -c /home/user/KooChemicalSimulation/CMakeFiles/hdf5/cmake_hdf5_test.cxx
+        /home/user/KooChemicalSimulation/CMakeFiles/hdf5/cmake_hdf5_test.cxx:1:10: fatal error: H5Cpp.h: No such file or directory
+            1 | #include <H5Cpp.h>
+              |          ^~~~~~~~~
+        compilation terminated.
+        gmake[1]: *** [CMakeFiles/cmTC_66706.dir/build.make:78: CMakeFiles/cmTC_66706.dir/cmake_hdf5_test.cxx.o] Error 1
+        gmake[1]: Leaving directory '/home/user/KooChemicalSimulation/CMakeFiles/CMakeScratch/TryCompile-pFoNC0'
+        gmake: *** [Makefile:127: cmTC_66706/fast] Error 2
+        
+      exitCode: 2
+...
