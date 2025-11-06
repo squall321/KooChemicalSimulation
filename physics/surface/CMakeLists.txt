@@ -1,8 +1,15 @@
 # Surface chemistry models
-# Phase 26-30: Corrosion, migration, surface reactions
+# Phase 24-26: Surface species, adsorption, surface reactions
+
+set(SURFACE_HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/physics/surface/SurfaceSpecies.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/physics/surface/AdsorptionKinetics.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../include/physics/surface/SurfaceReaction.h
+)
+
+# Header-only library - no source files needed
 
 add_subdirectory(corrosion)
 add_subdirectory(migration)
 
-# Placeholder for Phase 1
-message(STATUS "  - physics/surface (Phase 26-30)")
+message(STATUS "  - physics/surface (Phase 24-26 complete)")

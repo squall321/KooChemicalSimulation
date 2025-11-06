@@ -13,4 +13,4 @@ target_include_directories(koo_physics INTERFACE
 )
 target_link_libraries(koo_physics INTERFACE koo_core koo_utils)
 
-message(STATUS "Physics module configured (Phase 21-23 complete - v0.5.0-alpha3)")
+message(STATUS "Physics module configured (Phase 21-26 complete - v1.0.0-alpha1)")
