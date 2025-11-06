@@ -1,10 +1,28 @@
-# Example simulations
-# Phase 48: Example gallery
+# Example applications
+# Phase 48: Complete example gallery (v5.0.0)
 
-add_subdirectory(reactions)
-add_subdirectory(diffusion)
-add_subdirectory(surface)
-add_subdirectory(industrial)
+# Reaction example
+add_executable(reaction_example reaction_example.cpp)
+target_link_libraries(reaction_example PRIVATE koo_core koo_utils koo_chemistry koo_io)
+set_target_properties(reaction_example PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
 
-# Placeholder for Phase 1
-message(STATUS "Examples configured (Phase 48 - placeholder)")
+# Diffusion example
+add_executable(diffusion_example diffusion_example.cpp)
+target_link_libraries(diffusion_example PRIVATE koo_core koo_utils koo_physics koo_io)
+set_target_properties(diffusion_example PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+
+# Surface catalysis example
+add_executable(surface_example surface_example.cpp)
+target_link_libraries(surface_example PRIVATE koo_core koo_utils koo_physics koo_io)
+set_target_properties(surface_example PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+
+message(STATUS "Examples configured (Phase 48 complete - v5.0.0)")
