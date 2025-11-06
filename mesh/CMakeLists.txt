@@ -37,9 +37,16 @@ set(MESH_LOADER_HEADERS
     include/mesh/loader/GmshLoader.h
 )
 
+set(MESH_MANAGER_HEADERS
+    include/mesh/manager/MeshQuality.h
+    include/mesh/manager/MeshOptimizer.h
+    include/mesh/manager/MeshConverter.h
+)
+
 # Group headers for IDE
 source_group("Mesh Core Headers" FILES ${MESH_CORE_HEADERS})
 source_group("Mesh Loader Headers" FILES ${MESH_LOADER_HEADERS})
+source_group("Mesh Manager Headers" FILES ${MESH_MANAGER_HEADERS})
 
 # Subdirectories (placeholders for later phases)
 add_subdirectory(core)
@@ -50,4 +57,4 @@ add_subdirectory(boundary)
 # Add alias for consistent naming
 add_library(Koo::Mesh ALIAS koo_mesh)
 
-message(STATUS "Mesh module configured (Phase 6 - gmsh integration complete)")
+message(STATUS "Mesh module configured (Phase 6-7 - gmsh integration and optimization complete)")

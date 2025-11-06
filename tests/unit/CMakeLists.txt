@@ -41,4 +41,14 @@ set_target_properties(test_phase6 PROPERTIES
     CXX_STANDARD_REQUIRED ON
 )
 
-message(STATUS "  - tests/unit (Phase 3-6 tests added)")
+# Phase 7 test executable
+add_executable(test_phase7 test_phase7.cpp)
+target_link_libraries(test_phase7 PRIVATE koo_core koo_utils koo_mesh)
+
+# Set properties
+set_target_properties(test_phase7 PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+
+message(STATUS "  - tests/unit (Phase 3-7 tests added)")
