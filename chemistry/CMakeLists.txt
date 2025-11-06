@@ -20,8 +20,9 @@ add_subdirectory(species)
 add_subdirectory(parser)
 add_subdirectory(kinetics)
 add_subdirectory(reaction)
+add_subdirectory(coupling)
 
 # Add alias for consistent naming
 add_library(Koo::Chemistry ALIAS koo_chemistry)
 
-message(STATUS "Chemistry module configured (Phase 16-18 - Species, Reaction, and Kinetics systems complete)")
+message(STATUS "Chemistry module configured (Phase 16-20 complete - v0.4.0-beta)")
