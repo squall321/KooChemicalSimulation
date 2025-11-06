@@ -1,0 +1,68 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "koo-chemical-simulation",
+  "version-string": "0.1.0-alpha1",
+  "description": "Open-source chemical simulation solution using FEM solvers",
+  "homepage": "https://github.com/squall321/KooChemicalSimulation",
+  "license": "MIT",
+  "dependencies": [
+    {
+      "name": "eigen3",
+      "version>=": "3.4.0",
+      "features": []
+    },
+    {
+      "name": "fmt",
+      "version>=": "10.0.0"
+    },
+    {
+      "name": "spdlog",
+      "version>=": "1.12.0",
+      "features": ["fmt-external"]
+    },
+    {
+      "name": "nlohmann-json",
+      "version>=": "3.11.0"
+    },
+    {
+      "name": "yaml-cpp",
+      "version>=": "0.8.0"
+    },
+    {
+      "name": "vtk",
+      "version>=": "9.2.0",
+      "features": ["mpi", "opengl"]
+    },
+    {
+      "name": "hdf5",
+      "version>=": "1.14.0",
+      "features": ["cpp", "parallel", "zlib"]
+    },
+    {
+      "name": "gtest",
+      "version>=": "1.14.0"
+    }
+  ],
+  "features": {
+    "mpi": {
+      "description": "Enable MPI support for parallel computing",
+      "dependencies": [
+        "mpi",
+        "openmpi"
+      ]
+    },
+    "ngsolve": {
+      "description": "Enable NGSolve FEM solver",
+      "dependencies": []
+    },
+    "mfem": {
+      "description": "Enable MFEM solver",
+      "dependencies": []
+    },
+    "openmp": {
+      "description": "Enable OpenMP for shared-memory parallelism",
+      "dependencies": []
+    }
+  },
+  "builtin-baseline": "latest"
+}

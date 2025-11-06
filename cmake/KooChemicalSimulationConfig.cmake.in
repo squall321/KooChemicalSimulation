@@ -1,0 +1,36 @@
+@PACKAGE_INIT@
+
+# KooChemicalSimulation CMake configuration file
+
+include(CMakeFindDependencyMacro)
+
+# Find required dependencies
+find_dependency(Eigen3 3.4)
+find_dependency(fmt)
+find_dependency(spdlog)
+find_dependency(nlohmann_json 3.11.0)
+find_dependency(yaml-cpp)
+
+# Optional dependencies
+if(@ENABLE_MPI@)
+    find_dependency(MPI COMPONENTS CXX)
+endif()
+
+if(@VTK_FOUND@)
+    find_dependency(VTK COMPONENTS
+        CommonCore
+        CommonDataModel
+        IOCore
+        IOXML
+        FiltersCore
+    )
+endif()
+
+if(@HDF5_FOUND@)
+    find_dependency(HDF5 COMPONENTS CXX)
+endif()
+
+# Include targets
+include("${CMAKE_CURRENT_LIST_DIR}/KooChemicalSimulationTargets.cmake")
+
+check_required_components(KooChemicalSimulation)
