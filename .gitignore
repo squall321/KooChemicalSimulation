@@ -161,3 +161,4 @@ vgcore.*
 scratch/
 temp/
 tmp/
+/tests/unit/test_phase3
