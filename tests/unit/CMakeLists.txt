@@ -1,5 +1,14 @@
 # Unit tests
-# Phase 46: Unit tests with Google Test
+# Phase 3+: Unit tests (Google Test in Phase 46, simple tests for now)
 
-# Placeholder for Phase 1
-message(STATUS "  - tests/unit (Phase 46)")
+# Phase 3 test executable
+add_executable(test_phase3 test_phase3.cpp)
+target_link_libraries(test_phase3 PRIVATE koo_core koo_utils)
+
+# Set properties
+set_target_properties(test_phase3 PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+
+message(STATUS "  - tests/unit (Phase 3 tests added)")

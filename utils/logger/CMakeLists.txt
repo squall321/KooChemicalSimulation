@@ -1,5 +1,5 @@
 # Logging system
 # Phase 3: Logger implementation
 
-# Placeholder for Phase 1
-message(STATUS "  - utils/logger (Phase 3)")
+# Header files (already included via parent)
+message(STATUS "  - utils/logger (Phase 3 - complete)")
