@@ -224,6 +224,7 @@ add_subdirectory(physics)
 add_subdirectory(io)
 add_subdirectory(config)
 add_subdirectory(parallel)
+add_subdirectory(gpu)
 add_subdirectory(utils)
 
 # Applications

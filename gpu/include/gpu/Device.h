@@ -19,6 +19,7 @@
 #include <stdexcept>
 #include <memory>
 #include <sstream>
+#include <iostream>
 
 // Detect GPU backend
 #if defined(__CUDACC__) || defined(__NVCC__)

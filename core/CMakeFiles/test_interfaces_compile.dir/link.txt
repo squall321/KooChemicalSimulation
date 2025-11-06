@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG CMakeFiles/test_interfaces_compile.dir/src/test_interfaces.cpp.o -o test_interfaces_compile 
