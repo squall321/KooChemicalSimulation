@@ -285,4 +285,14 @@ set_target_properties(test_phase54 PROPERTIES
     CXX_STANDARD_REQUIRED ON
 )
 
-message(STATUS "  - tests/unit (Phase 3-14, 16-26, 31-35, 36-40, 41-45, 51-54 tests added)")
+# Phase 55 test executable (GPU Domain Decomposition)
+add_executable(test_phase55 test_phase55.cpp)
+target_link_libraries(test_phase55 PRIVATE koo_core koo_utils koo_gpu)
+
+# Set properties
+set_target_properties(test_phase55 PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+
+message(STATUS "  - tests/unit (Phase 3-14, 16-26, 31-35, 36-40, 41-45, 51-55 tests added)")
