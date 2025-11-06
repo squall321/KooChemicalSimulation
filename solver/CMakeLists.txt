@@ -25,4 +25,4 @@ add_subdirectory(factory)
 # Add alias for consistent naming
 add_library(Koo::Solver ALIAS koo_solver)
 
-message(STATUS "Solver module configured (Phase 11-15 - PDE interfaces complete)")
+message(STATUS "Solver module configured (Phase 11-14 - PDE interfaces and factory complete)")
