@@ -181,4 +181,14 @@ set_target_properties(test_phase21 PROPERTIES
     CXX_STANDARD_REQUIRED ON
 )
 
-message(STATUS "  - tests/unit (Phase 3-14, 16-21 tests added)")
+# Phase 22 test executable
+add_executable(test_phase22 test_phase22.cpp)
+target_link_libraries(test_phase22 PRIVATE koo_core koo_utils koo_physics)
+
+# Set properties
+set_target_properties(test_phase22 PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+
+message(STATUS "  - tests/unit (Phase 3-14, 16-22 tests added)")
