@@ -1,188 +1,28 @@
-# Build directories
+# Build outputs
 build/
-build-*/
-cmake-build-*/
-out/
-
-# CMake generated files
-CMakeCache.txt
-CMakeFiles/
-cmake_install.cmake
-Makefile
-*.cmake
-!CMakeLists.txt
-install_manifest.txt
-CTestTestfile.cmake
-compile_commands.json
-
-# Compiled Object files
 *.o
-*.obj
-*.ko
-*.elf
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
 *.so
-*.so.*
-*.dylib
-*.dll
-
-# Compiled Static libraries
 *.a
-*.lib
-*.la
-*.lo
-
-# Executables
 *.exe
-*.out
-*.app
-*.i*86
-*.x86_64
-*.hex
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
-
-# Dependency directories
-vcpkg_installed/
-.vcpkg/
-_deps/
-
-# IDE specific files
-# Visual Studio
-.vs/
-*.vcxproj
-*.vcxproj.filters
-*.vcxproj.user
-*.sln
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
-
-# Visual Studio Code
-.vscode/
-*.code-workspace
-
-# CLion
-.idea/
-cmake-build-*/
-
-# Xcode
-*.xcodeproj
-*.xcworkspace
-xcuserdata/
-
-# Eclipse
-.cproject
-.project
-.settings/
-
-# Qt Creator
-*.pro.user
-*.pro.user.*
-CMakeLists.txt.user*
-
-# Temporary files
-*~
-*.swp
-*.swo
-*.tmp
-*.bak
-*.log
-
-# OS specific
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Testing
-Testing/
-*.gcov
-*.gcda
-*.gcno
-coverage/
-*.profdata
-*.profraw
-
-# Documentation
-docs/html/
-docs/latex/
-docs/doxygen_sqlite3.db
-
-# Output files
+# Test outputs
+*.csv
 *.vtk
-*.vtu
-*.vtp
 *.pvd
-*.pvtu
-*.h5
-*.hdf5
-results/
-output/
 
-# Package managers
-conan.lock
-conanbuildinfo.*
-conaninfo.txt
-graph_info.json
-
-# Python (if using python bindings later)
+# Python
 __pycache__/
-*.py[cod]
-*$py.class
+*.pyc
+*.pyo
 *.egg-info/
 dist/
-.Python
 
-# Backup files
-*.orig
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
 
-# Profiling
-gmon.out
-perf.data
-perf.data.old
-
-# Core dumps (only match files named "core", not directories)
-core.[0-9]*
-vgcore.*
-
-# Jupyter notebooks (if added later)
-.ipynb_checkpoints/
-
-# Custom
-scratch/
-temp/
-tmp/
-/tests/unit/test_phase3
-/tests/unit/test_phase4
-/tests/unit/test_phase5
-/tests/unit/test_phase6
-/tests/unit/test_phase7
-/tests/unit/test_phase8
-/tests/unit/test_phase9
-/tests/unit/test_phase10
-/tests/unit/test_phase11
-/tests/unit/test_phase12
-/tests/unit/test_phase13
-/tests/unit/test_phase14
-/tests/unit/test_phase16
-/tests/unit/test_phase17
-/tests/unit/test_phase18
-/tests/unit/test_phase19
-/tests/unit/test_phase20
-/tests/unit/test_phase21
-/tests/unit/test_phase22
-/tests/unit/test_phase23
-/tests/unit/test_phase24_26
-/tests/unit/test_phase31_35
-/tests/unit/test_phase36_40
-/tests/unit/test_phase41_45
+# OS
+.DS_Store
+Thumbs.db
