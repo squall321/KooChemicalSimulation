@@ -130,6 +130,10 @@ def hello():
         print("C++ extension not available ✗")
 
 
+# Import utility modules (Phase 57-60)
+from . import numpy_utils
+from . import plotting
+
 __all__ = [
     # Version
     "__version__",
@@ -140,6 +144,8 @@ __all__ = [
     "mesh",
     "chemistry",
     "gpu",
+    "numpy_utils",
+    "plotting",
 
     # Core classes
     "Vector",
