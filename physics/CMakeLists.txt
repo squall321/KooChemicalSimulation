@@ -3,6 +3,7 @@
 
 add_subdirectory(diffusion)
 add_subdirectory(transport)
+add_subdirectory(coupling)
 add_subdirectory(surface)
 
 # Create physics INTERFACE library
@@ -12,4 +13,4 @@ target_include_directories(koo_physics INTERFACE
 )
 target_link_libraries(koo_physics INTERFACE koo_core koo_utils)
 
-message(STATUS "Physics module configured (Phase 21-22 complete - v0.5.0-alpha2)")
+message(STATUS "Physics module configured (Phase 21-23 complete - v0.5.0-alpha3)")
