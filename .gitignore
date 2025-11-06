@@ -150,9 +150,9 @@ gmon.out
 perf.data
 perf.data.old
 
-# Core dumps
-core
-core.*
+# Core dumps (only match files named "core", not directories)
+core.[0-9]*
+vgcore.*
 
 # Jupyter notebooks (if added later)
 .ipynb_checkpoints/
