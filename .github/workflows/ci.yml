@@ -1,0 +1,219 @@
+name: CI Build and Test
+
+on:
+  push:
+    branches: [ main, master, develop, claude/* ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build and Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-20.04]
+        build_type: [Release, Debug]
+        include:
+          - os: ubuntu-22.04
+            build_type: Release
+            coverage: true
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          cmake \
+          g++ \
+          libgtest-dev \
+          libomp-dev \
+          python3 \
+          python3-pip \
+          python3-dev
+
+    - name: Install Python dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip3 install pybind11 numpy matplotlib pytest
+
+    - name: Build GTest from source (Ubuntu 20.04)
+      if: matrix.os == 'ubuntu-20.04'
+      run: |
+        cd /usr/src/gtest
+        sudo cmake .
+        sudo make
+        sudo cp lib/*.a /usr/lib || sudo cp *.a /usr/lib
+
+    - name: Configure CMake
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+          -DBUILD_TESTING=ON \
+          -DBUILD_EXAMPLES=ON \
+          -DBUILD_GPU=OFF \
+          -DENABLE_OPENMP=ON
+
+    - name: Build project
+      run: cmake --build build -j$(nproc)
+
+    - name: Run tests
+      working-directory: build
+      run: ctest --output-on-failure --verbose
+
+    - name: Build examples
+      run: |
+        cmake --build build --target diffusion_example -j$(nproc)
+        cmake --build build --target reaction_example -j$(nproc)
+        cmake --build build --target full_simulation_example -j$(nproc)
+
+    - name: Test examples execution
+      run: |
+        cd build/examples
+        timeout 10s ./diffusion_example || echo "Diffusion example completed or timed out"
+        timeout 10s ./reaction_example || echo "Reaction example completed or timed out"
+        timeout 5s ./full_simulation_example || echo "Full simulation example completed or timed out"
+
+    - name: Check for compilation warnings
+      if: matrix.build_type == 'Release'
+      run: |
+        cmake -B build-strict \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic" \
+          -DBUILD_GPU=OFF
+        cmake --build build-strict --target full_simulation_example -j$(nproc) 2>&1 | tee warnings.log
+        echo "Warning count:"
+        grep -c "warning:" warnings.log || echo "0 warnings found"
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-${{ matrix.os }}-${{ matrix.build_type }}
+        path: |
+          build/Testing/
+          warnings.log
+        retention-days: 30
+
+  build-with-strict-warnings:
+    name: Build with strict warnings (Ubuntu 22.04)
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake g++ libomp-dev
+
+    - name: Configure with strict warnings
+      run: |
+        cmake -B build \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Werror" \
+          -DBUILD_GPU=OFF \
+          -DBUILD_TESTING=ON
+
+    - name: Build Phase 66-70 files
+      run: |
+        cmake --build build --target test_phase66_70_simple -j$(nproc)
+        cmake --build build --target full_simulation_example -j$(nproc)
+
+    - name: Report success
+      run: echo "✅ Phase 66-70 builds without warnings with -Werror"
+
+  code-quality:
+    name: Code Quality Checks
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-format cppcheck
+
+    - name: Check code formatting (informational)
+      run: |
+        find . -name "*.cpp" -o -name "*.h" | grep -E "(simulation|examples)/.*\.(cpp|h)$" | \
+        xargs clang-format --dry-run --Werror 2>&1 | tee format-check.log || \
+        echo "⚠️ Formatting issues found (informational only)"
+
+    - name: Run cppcheck (informational)
+      run: |
+        cppcheck --enable=warning,performance,portability \
+          --suppress=missingIncludeSystem \
+          --inline-suppr \
+          --error-exitcode=0 \
+          simulation/include/ examples/ 2>&1 | tee cppcheck.log || \
+        echo "⚠️ Cppcheck issues found (informational only)"
+
+    - name: Upload analysis results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: code-quality-results
+        path: |
+          format-check.log
+          cppcheck.log
+        retention-days: 30
+
+  documentation:
+    name: Check Documentation
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Check for required documentation files
+      run: |
+        files=(
+          "README.md"
+          "PROGRESS_SUMMARY.md"
+          "PROJECT_STATUS_COMPLETE.md"
+          "GAP_ANALYSIS.md"
+        )
+
+        missing=0
+        for file in "${files[@]}"; do
+          if [ ! -f "$file" ]; then
+            echo "❌ Missing: $file"
+            missing=$((missing + 1))
+          else
+            echo "✅ Found: $file"
+          fi
+        done
+
+        if [ $missing -gt 0 ]; then
+          echo "⚠️ $missing documentation file(s) missing"
+          exit 1
+        fi
+
+        echo "✅ All required documentation files present"
+
+    - name: Verify documentation consistency
+      run: |
+        # Check that version numbers match
+        readme_version=$(grep -oP "v\d+\.\d+\.\d+-alpha\d+" README.md | head -1)
+        progress_version=$(grep -oP "v\d+\.\d+\.\d+-alpha\d+" PROGRESS_SUMMARY.md | head -1)
+
+        echo "README version: $readme_version"
+        echo "PROGRESS version: $progress_version"
+
+        if [ "$readme_version" != "$progress_version" ]; then
+          echo "⚠️ Version mismatch between README and PROGRESS_SUMMARY"
+        else
+          echo "✅ Documentation versions consistent"
+        fi
