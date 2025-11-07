@@ -54,15 +54,15 @@ int main() {
 
     // Test MeshConverter
     std::cout << "Testing MeshConverter...\n";
-    bool vtk_ok = MeshConverter::exportToVTK(*mesh, "/tmp/test.vtk");
+    [[maybe_unused]] bool vtk_ok = MeshConverter::exportToVTK(*mesh, "/tmp/test.vtk");
     assert(vtk_ok && "VTK export should succeed");
     std::cout << "✓ VTK export works\n";
 
-    bool stl_ok = MeshConverter::exportToSTL(*mesh, "/tmp/test.stl");
+    [[maybe_unused]] bool stl_ok = MeshConverter::exportToSTL(*mesh, "/tmp/test.stl");
     assert(stl_ok && "STL export should succeed");
     std::cout << "✓ STL export works\n";
 
-    bool obj_ok = MeshConverter::exportToOBJ(*mesh, "/tmp/test.obj");
+    [[maybe_unused]] bool obj_ok = MeshConverter::exportToOBJ(*mesh, "/tmp/test.obj");
     assert(obj_ok && "OBJ export should succeed");
     std::cout << "✓ OBJ export works\n";
 
