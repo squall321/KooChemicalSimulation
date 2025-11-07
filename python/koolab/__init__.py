@@ -44,7 +44,7 @@ Version: 6.0.0-alpha2
 Phase: 56 - Core Python Interface
 """
 
-__version__ = "6.0.0-alpha2"
+__version__ = "6.0.0-alpha4"
 __author__ = "KooChemicalSimulation Development Team"
 
 # Import C++ extension module
@@ -130,9 +130,16 @@ def hello():
         print("C++ extension not available ✗")
 
 
-# Import utility modules (Phase 57-60)
+# Import utility modules (Phase 57-60, 68)
 from . import numpy_utils
 from . import plotting
+
+# Import real-time visualization (Phase 68)
+try:
+    from . import realtime
+except ImportError:
+    # matplotlib not available
+    realtime = None
 
 __all__ = [
     # Version
@@ -146,6 +153,7 @@ __all__ = [
     "gpu",
     "numpy_utils",
     "plotting",
+    "realtime",
 
     # Core classes
     "Vector",

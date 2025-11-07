@@ -25,4 +25,22 @@ set_target_properties(surface_example PROPERTIES
     CXX_STANDARD_REQUIRED ON
 )
 
-message(STATUS "Examples configured (Phase 48 complete - v5.0.0)")
+# Full simulation example (Phase 70)
+add_executable(full_simulation_example full_simulation_example.cpp)
+target_link_libraries(full_simulation_example PRIVATE
+    koo_core
+    koo_utils
+    koo_simulation
+)
+
+# Link GPU if available
+if(TARGET koo_gpu)
+    target_link_libraries(full_simulation_example PRIVATE koo_gpu)
+endif()
+
+set_target_properties(full_simulation_example PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+
+message(STATUS "Examples configured (Phase 48, 70 complete - v6.0.0-alpha4)")

@@ -226,6 +226,7 @@ add_subdirectory(config)
 add_subdirectory(parallel)
 add_subdirectory(gpu)
 add_subdirectory(utils)
+add_subdirectory(simulation)
 
 # Applications
 add_subdirectory(apps)
@@ -244,6 +245,12 @@ endif()
 # Examples (if enabled)
 if(BUILD_EXAMPLES)
     add_subdirectory(examples)
+endif()
+
+# Benchmarks (Phase 70)
+option(BUILD_BENCHMARKS "Build benchmark suite" ON)
+if(BUILD_BENCHMARKS)
+    add_subdirectory(benchmarks)
 endif()
 
 # Documentation (if enabled)
