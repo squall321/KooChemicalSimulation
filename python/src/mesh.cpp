@@ -2,20 +2,20 @@
  * @file mesh.cpp
  * @brief Python bindings for mesh types
  * @author KooChemicalSimulation Development Team
- * @version 6.0.0-alpha2
- * @date 2025-11-06
+ * @version 6.0.0-alpha4
+ * @date 2025-11-07
  *
  * Phase 56: Core Python Interface
  */
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <pybind11/numpy.h>
 
 // Mesh headers
 #include "mesh/core/Node.h"
 #include "mesh/core/Element.h"
 #include "mesh/core/MeshData.h"
+#include "core/interfaces/IMesh.h"
 
 namespace py = pybind11;
 
@@ -23,11 +23,25 @@ void bind_mesh(py::module& m) {
     m.doc() = "Mesh management and operations";
 
     // ============================================
+    // ElementType enum
+    // ============================================
+    py::enum_<koo::core::ElementType>(m, "ElementType")
+        .value("VERTEX", koo::core::ElementType::VERTEX)
+        .value("LINE", koo::core::ElementType::LINE)
+        .value("TRIANGLE", koo::core::ElementType::TRIANGLE)
+        .value("QUADRILATERAL", koo::core::ElementType::QUADRILATERAL)
+        .value("TETRAHEDRON", koo::core::ElementType::TETRAHEDRON)
+        .value("HEXAHEDRON", koo::core::ElementType::HEXAHEDRON)
+        .value("PRISM", koo::core::ElementType::PRISM)
+        .value("PYRAMID", koo::core::ElementType::PYRAMID)
+        .export_values();
+
+    // ============================================
     // Node bindings
     // ============================================
     py::class_<koo::mesh::core::Node>(m, "Node")
         .def(py::init<>(), "Default constructor")
-        .def(py::init<int, double, double, double>(),
+        .def(py::init<size_t, double, double, double>(),
              "Constructor with ID and coordinates",
              py::arg("id"), py::arg("x"), py::arg("y"), py::arg("z") = 0.0)
 
@@ -37,48 +51,32 @@ void bind_mesh(py::module& m) {
                      "Node ID")
 
         .def_property_readonly("x",
-                              &koo::mesh::core::Node::x,
+                              &koo::mesh::core::Node::getX,
                               "X-coordinate")
 
         .def_property_readonly("y",
-                              &koo::mesh::core::Node::y,
+                              &koo::mesh::core::Node::getY,
                               "Y-coordinate")
 
         .def_property_readonly("z",
-                              &koo::mesh::core::Node::z,
+                              &koo::mesh::core::Node::getZ,
                               "Z-coordinate")
-
-        .def("coords", [](const koo::mesh::core::Node& node) {
-            return py::make_tuple(node.x(), node.y(), node.z());
-        }, "Get coordinates as tuple")
 
         .def("__repr__", [](const koo::mesh::core::Node& node) {
             std::ostringstream oss;
             oss << "<Node id=" << node.getId()
-                << " pos=(" << node.x() << ", " << node.y() << ", " << node.z() << ")>";
+                << " pos=(" << node.getX() << ", " << node.getY() << ", " << node.getZ() << ")>";
             return oss.str();
         });
-
-    // ============================================
-    // ElementType enum
-    // ============================================
-    py::enum_<koo::mesh::core::ElementType>(m, "ElementType")
-        .value("NODE", koo::mesh::core::ElementType::NODE)
-        .value("EDGE", koo::mesh::core::ElementType::EDGE)
-        .value("TRIANGLE", koo::mesh::core::ElementType::TRIANGLE)
-        .value("QUADRILATERAL", koo::mesh::core::ElementType::QUADRILATERAL)
-        .value("TETRAHEDRON", koo::mesh::core::ElementType::TETRAHEDRON)
-        .value("HEXAHEDRON", koo::mesh::core::ElementType::HEXAHEDRON)
-        .export_values();
 
     // ============================================
     // Element bindings
     // ============================================
     py::class_<koo::mesh::core::Element>(m, "Element")
         .def(py::init<>(), "Default constructor")
-        .def(py::init<int, koo::mesh::core::ElementType>(),
-             "Constructor with ID and type",
-             py::arg("id"), py::arg("type"))
+        .def(py::init<size_t, koo::core::ElementType, const std::vector<size_t>&>(),
+             "Constructor with ID, type, and node IDs",
+             py::arg("id"), py::arg("type"), py::arg("node_ids"))
 
         .def_property("id",
                      &koo::mesh::core::Element::getId,
@@ -89,20 +87,17 @@ void bind_mesh(py::module& m) {
                               &koo::mesh::core::Element::getType,
                               "Element type")
 
-        .def("add_node", &koo::mesh::core::Element::addNode,
-             "Add node ID to element", py::arg("node_id"))
-
-        .def("get_nodes", &koo::mesh::core::Element::getNodes,
+        .def("get_node_ids", &koo::mesh::core::Element::getNodeIds,
              "Get list of node IDs")
 
-        .def("num_nodes", &koo::mesh::core::Element::numNodes,
+        .def("get_num_nodes", &koo::mesh::core::Element::getNumNodes,
              "Get number of nodes")
 
         .def("__repr__", [](const koo::mesh::core::Element& elem) {
             std::ostringstream oss;
             oss << "<Element id=" << elem.getId()
                 << " type=" << static_cast<int>(elem.getType())
-                << " nnodes=" << elem.numNodes() << ">";
+                << " nnodes=" << elem.getNumNodes() << ">";
             return oss.str();
         });
 
@@ -120,20 +115,20 @@ void bind_mesh(py::module& m) {
                 &koo::mesh::core::MeshData::addElement),
              "Add element to mesh", py::arg("element"))
 
-        .def("get_node", py::overload_cast<int>(
+        .def("get_node", py::overload_cast<size_t>(
                 &koo::mesh::core::MeshData::getNode),
              "Get node by ID", py::arg("id"),
              py::return_value_policy::reference_internal)
 
-        .def("get_element", py::overload_cast<int>(
+        .def("get_element", py::overload_cast<size_t>(
                 &koo::mesh::core::MeshData::getElement),
              "Get element by ID", py::arg("id"),
              py::return_value_policy::reference_internal)
 
-        .def("num_nodes", &koo::mesh::core::MeshData::numNodes,
+        .def("get_num_nodes", &koo::mesh::core::MeshData::getNumNodes,
              "Get number of nodes")
 
-        .def("num_elements", &koo::mesh::core::MeshData::numElements,
+        .def("get_num_elements", &koo::mesh::core::MeshData::getNumElements,
              "Get number of elements")
 
         .def("clear", &koo::mesh::core::MeshData::clear,
@@ -141,8 +136,8 @@ void bind_mesh(py::module& m) {
 
         .def("__repr__", [](const koo::mesh::core::MeshData& mesh) {
             std::ostringstream oss;
-            oss << "<MeshData nodes=" << mesh.numNodes()
-                << " elements=" << mesh.numElements() << ">";
+            oss << "<MeshData nodes=" << mesh.getNumNodes()
+                << " elements=" << mesh.getNumElements() << ">";
             return oss.str();
         });
 
@@ -157,7 +152,7 @@ void bind_mesh(py::module& m) {
             double dy = (y1 - y0) / ny;
 
             // Create nodes
-            int node_id = 0;
+            size_t node_id = 0;
             for (int j = 0; j <= ny; ++j) {
                 for (int i = 0; i <= nx; ++i) {
                     double x = x0 + i * dx;
@@ -167,15 +162,19 @@ void bind_mesh(py::module& m) {
             }
 
             // Create elements (quadrilaterals)
-            int elem_id = 0;
+            size_t elem_id = 0;
             for (int j = 0; j < ny; ++j) {
                 for (int i = 0; i < nx; ++i) {
-                    koo::mesh::core::Element elem(elem_id++, koo::mesh::core::ElementType::QUADRILATERAL);
                     int n0 = j * (nx + 1) + i;
-                    elem.addNode(n0);
-                    elem.addNode(n0 + 1);
-                    elem.addNode(n0 + (nx + 1) + 1);
-                    elem.addNode(n0 + (nx + 1));
+                    std::vector<size_t> nodeIds = {
+                        static_cast<size_t>(n0),
+                        static_cast<size_t>(n0 + 1),
+                        static_cast<size_t>(n0 + (nx + 1) + 1),
+                        static_cast<size_t>(n0 + (nx + 1))
+                    };
+                    koo::mesh::core::Element elem(elem_id++,
+                                                   koo::core::ElementType::QUADRILATERAL,
+                                                   nodeIds);
                     mesh->addElement(elem);
                 }
             }
