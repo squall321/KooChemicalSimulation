@@ -1,462 +1,414 @@
 # KooChemicalSimulation - 남은 작업 정리
 
-**작성일**: 2025-11-07
-**현재 상태**: v6.0.0-alpha4 - 프로덕션 준비 완료
-**완료율**: 핵심 기능 100%, 부가 기능 85%
+**작성일**: 2025-11-07 (업데이트)
+**현재 상태**: v6.0.0-alpha5 - 프로덕션 준비 + 문서화 완료
+**완료율**: 핵심 기능 100%, 부가 기능 95%
 
 ---
 
-## 📊 현재 완료 상태
+## 📊 최근 완료 상태
 
-### ✅ 완료된 작업 (이번 세션)
-1. ✅ 타입 변환 경고 **모두 제거** (Phase 1-70)
-2. ✅ CI/CD 파이프라인 구축 (GitHub Actions)
-3. ✅ Phase 66-70 테스트 커버리지 (20 tests)
-4. ✅ 프로젝트 상태 문서화 완료
-5. ✅ Gap 분석 및 해결
+### ✅ Priority A - 완료 (이전 세션)
+1. ✅ **A1**: Python 바인딩 완전 수정
+2. ✅ **A2**: 미사용 변수/파라미터 정리 완료
+3. ✅ **A3**: GitHub Actions 배지 추가
 
-### ⚠️ 부분 완료
-6. ⚠️ Python 바인딩 (네임스페이스/헤더 수정, 생성자 이슈 남음)
+### ✅ Priority B - 완료 (이전 세션 + 이번 세션)
+1. ✅ **B4**: Python Jupyter Notebooks (4개 노트북 작성)
+   - `notebooks/01_basic_usage.ipynb` - 기본 사용법
+   - `notebooks/02_reaction_diffusion.ipynb` - 반응-확산 시스템
+   - `notebooks/03_real_time_viz.ipynb` - 실시간 시각화
+   - `notebooks/04_gpu_acceleration.ipynb` - GPU 가속 가이드
 
----
+2. ✅ **B1**: 문서화 완성 (3개 주요 문서)
+   - `GETTING_STARTED.md` (449 lines) - 설치 및 첫 시뮬레이션
+   - `TUTORIALS.md` (750+ lines) - 7개 튜토리얼
+   - `API_REFERENCE.md` (590+ lines) - 완전한 API 문서
 
-## 🎯 남은 작업 - 우선순위별 정리
+3. ✅ **B3**: 추가 예제 프로그램 (3개 고급 예제)
+   - `examples/multi_physics_example.cpp` (480+ lines) - 열-화학-유동 결합
+   - `examples/gpu_performance_comparison.cpp` (390+ lines) - CPU vs GPU 비교
+   - `examples/adaptive_mesh_example.cpp` (450+ lines) - 적응형 메시
 
-## 우선순위 A: 즉시 권장 (Critical)
+4. ✅ **B2**: 성능 벤치마크 및 프로파일링
+   - `benchmarks/cpu_benchmark_suite.cpp` (421 lines) - CPU 벤치마크
+   - `PERFORMANCE_BENCHMARKS.md` (474 lines) - 완전한 성능 분석
 
-### A1. Python 바인딩 완전 수정 ⭐⭐⭐
-**설명**: Python 인터페이스 완성
-**현재 상태**: 네임스페이스/헤더 수정 완료, 생성자 불일치 남음
-**필요성**: Phase 56-60 완성을 위해
-**난이도**: 🔴 중간
-**예상 시간**: 2-3시간
-
-**세부 작업**:
-```
-1. python/src/core.cpp 수정
-   - Vector3D 바인딩 업데이트 (CommonTypes.h 기반)
-   - PhysicalQuantity 바인딩 수정
-   - 예상: 30분
-
-2. python/src/chemistry.cpp 수정
-   - Species 생성자 수정 (3개 인자 필요)
-   - Reaction 바인딩 업데이트
-   - ChemicalSystem 바인딩 추가
-   - 예상: 1시간
-
-3. python/src/mesh.cpp 수정
-   - MeshData 생성자 수정
-   - 메서드 바인딩 검증
-   - 예상: 30분
-
-4. 빌드 및 테스트
-   - Python 모듈 빌드
-   - 간단한 import 테스트
-   - 예상: 30분
-```
-
-**우선순위 이유**:
-- Phase 56-60 완성
-- 사용자 친화적 인터페이스
-- 다른 Python 도구와 통합 가능
+**총 5개의 커밋이 브랜치 `claude/project-status-review-011CUsQDsp6Q7ghbkTEHsovq`에 푸시됨**
 
 ---
 
-### A2. 나머지 파일들의 미사용 변수/파라미터 정리 ⭐⭐
-**설명**: 모든 컴파일 경고 완전 제거
-**현재 상태**: Phase 66-70 완료, Phase 1-65 일부 남음
-**난이도**: 🟡 쉬움
-**예상 시간**: 1-2시간
+## 🎯 남은 작업 - Priority C (현재 진행 예정)
 
-**작업 위치**:
-```
-tests/unit/test_phase3.cpp
-tests/unit/test_phase4.cpp
-tests/unit/test_phase5.cpp
-config/include/config/parser/ConfigParser.h (Line 488)
-... 기타 10-15개 파일
-```
+## 우선순위 C: 코드 품질 및 배포 개선
 
-**방법**:
-```bash
-# 1. 경고 확인
-cmake -B build-strict -DCMAKE_CXX_FLAGS="-Wall -Wextra -Wpedantic -Werror"
-cmake --build build-strict 2>&1 | grep "warning:" > warnings.txt
-
-# 2. 수정
-- [[maybe_unused]] 어트리뷰트 추가
-- 또는 실제로 변수 사용
-- 또는 주석으로 변경
-
-# 3. 검증
-cmake --build build-strict
-```
-
----
-
-### A3. GitHub Actions 워크플로우 테스트 및 배지 추가 ⭐
-**설명**: CI/CD가 실제로 작동하는지 확인
-**난이도**: 🟢 매우 쉬움
-**예상 시간**: 30분
-
-**작업**:
-```
-1. GitHub에서 Actions 탭 확인
-   - 워크플로우 실행 여부 확인
-   - 실패 시 로그 확인 및 수정
-
-2. README.md에 배지 추가
-   - [![CI](https://github.com/.../badge.svg)](...)
-   - [![Tests](https://github.com/.../badge.svg)](...)
-   - [![Coverage](https://github.com/.../badge.svg)](...)
-
-3. 상태 확인
-   - 모든 빌드가 통과하는지 확인
-```
-
----
-
-## 우선순위 B: 중요하지만 급하지 않음 (Important)
-
-### B1. 문서화 완성 ⭐⭐
-**난이도**: 🟡 쉬움
-**예상 시간**: 4-6시간
-
-**작업**:
-```
-1. GETTING_STARTED.md (1-2시간)
-   - 설치 가이드
-   - 첫 시뮬레이션 실행
-   - 일반적인 문제 해결
-
-2. TUTORIALS.md (2-3시간)
-   - 확산 시뮬레이션 튜토리얼
-   - 반응-확산 튜토리얼
-   - GPU 가속 튜토리얼
-   - 결과 시각화 튜토리얼
-
-3. API_REFERENCE.md (1-2시간)
-   - 주요 클래스 문서
-   - 사용 예제
-   - 파라미터 설명
-```
-
----
-
-### B2. 성능 벤치마크 및 프로파일링 ⭐⭐
-**난이도**: 🔴 중간-어려움
-**예상 시간**: 6-8시간 (GPU 하드웨어 필요)
-
-**작업**:
-```
-1. CPU 벤치마크 (2-3시간)
-   - 다양한 크기의 문제
-   - 메모리 사용량 측정
-   - 확장성 테스트
-
-2. GPU 벤치마크 (3-4시간) - GPU 필요
-   - CPU vs GPU 비교
-   - 다양한 GPU 모델 테스트
-   - 최적 블록 크기 찾기
-
-3. 프로파일링 (1-2시간)
-   - Valgrind 메모리 검사
-   - perf 성능 분석
-   - NVIDIA Nsight (GPU)
-```
-
-**PERFORMANCE_BENCHMARKS.md 생성**:
-```markdown
-# 성능 벤치마크
-
-## 테스트 환경
-- CPU: ...
-- GPU: ...
-- RAM: ...
-
-## 결과
-### 확산 솔버
-- 1000 노드: X ms
-- 10000 노드: Y ms
-- 100000 노드: Z ms
-
-### CPU vs GPU
-- 소형 문제 (1K): CPU 빠름
-- 중형 문제 (10K): 비슷
-- 대형 문제 (100K+): GPU 10x 빠름
-```
-
----
-
-### B3. 추가 예제 프로그램 작성 ⭐⭐
-**난이도**: 🟡 쉬움-중간
-**예상 시간**: 4-6시간
-
-**작업**:
-```
-1. multi_physics_example.cpp (2-3시간)
-   - 열-화학-유동 3중 결합
-   - 실제 연소 시뮬레이션
-   - Arrhenius 반응 포함
-
-2. gpu_performance_comparison.cpp (1-2시간)
-   - 동일 문제를 CPU/GPU로 실행
-   - 성능 비교 출력
-   - 최적 크기 추천
-
-3. adaptive_mesh_example.cpp (1-2시간)
-   - 적응형 메시 세분화
-   - 오차 추정 기반 세분화
-   - 동적 메모리 관리
-```
-
----
-
-### B4. Python 예제 및 튜토리얼 Jupyter Notebook ⭐
-**난이도**: 🟡 쉬움
-**예상 시간**: 3-4시간
-**의존성**: A1 완료 후
-
-**작업**:
-```
-1. notebooks/01_basic_usage.ipynb
-   - koolab 임포트
-   - 간단한 확산 문제
-   - 결과 시각화
-
-2. notebooks/02_reaction_diffusion.ipynb
-   - 반응-확산 시스템
-   - 파라미터 스터디
-   - 애니메이션
-
-3. notebooks/03_real_time_viz.ipynb
-   - 실시간 플로팅
-   - 인터랙티브 파라미터
-   - 대시보드
-
-4. notebooks/04_gpu_acceleration.ipynb
-   - GPU 사용법
-   - 성능 비교
-   - 최적화 팁
-```
-
----
-
-## 우선순위 C: 선택적 개선 (Optional)
-
-### C1. 코드 품질 도구 통합 ⭐
+### C1. 코드 품질 도구 통합 ⭐⭐
 **난이도**: 🟡 쉬움
 **예상 시간**: 2-3시간
+**목표**: 코드 일관성 및 품질 자동화
 
 **작업**:
 ```
-1. clang-tidy 설정
+1. clang-format 설정 (30분)
+   - .clang-format 파일 생성 (Google, LLVM, 또는 Custom 스타일)
+   - 모든 소스 파일에 적용
+   - CMake에 format 타겟 추가
+
+   예시 명령:
+   find src include -name "*.cpp" -o -name "*.h" | xargs clang-format -i
+
+2. clang-tidy 설정 (1시간)
    - .clang-tidy 파일 생성
+   - 체크 규칙 선택 (modernize, performance, readability)
+   - CMake에 tidy 타겟 추가
    - CI에 통합
-   - 기존 코드 점진적 수정
 
-2. clang-format 표준화
-   - .clang-format 파일 생성
-   - 모든 파일에 적용
-   - pre-commit hook 추가
+   예시 규칙:
+   - modernize-use-nullptr
+   - modernize-use-auto
+   - performance-*
+   - readability-*
 
-3. cppcheck 상세 분석
-   - 설정 파일 작성
-   - CI에 통합
-   - 발견된 이슈 수정
+3. cppcheck 설정 (30분)
+   - cppcheck 스크립트 작성
+   - CI에 추가
+   - 설정 파일로 false positive 제외
 
-4. SonarQube 또는 Coverity 스캔
-   - 정적 분석
-   - 보안 취약점 검사
+4. pre-commit hook (30분)
+   - .git/hooks/pre-commit 작성
+   - 자동 포맷팅 및 검사
 ```
+
+**기대 효과**:
+- 코드 스타일 일관성 100%
+- 잠재적 버그 조기 발견
+- 유지보수성 향상
 
 ---
 
-### C2. 테스트 커버리지 측정 및 개선 ⭐
+### C2. 테스트 커버리지 측정 및 개선 ⭐⭐
 **난이도**: 🔴 중간
 **예상 시간**: 4-6시간
+**목표**: 테스트 커버리지 80%+ 달성
 
 **작업**:
 ```
 1. gcov/lcov 설정 (2시간)
-   - CMake 설정 추가
-   - 커버리지 타겟 생성
-   - HTML 리포트 생성
+   CMakeLists.txt에 추가:
 
-2. Codecov/Coveralls 통합 (1시간)
-   - GitHub Actions 연동
-   - 자동 업로드
-   - PR에 커버리지 표시
+   option(ENABLE_COVERAGE "Enable coverage reporting" OFF)
+
+   if(ENABLE_COVERAGE)
+       add_compile_options(--coverage -O0 -g)
+       add_link_options(--coverage)
+   endif()
+
+   빌드 및 실행:
+   cmake -B build-coverage -DENABLE_COVERAGE=ON
+   cmake --build build-coverage
+   cd build-coverage && ctest
+   lcov --capture --directory . --output-file coverage.info
+   genhtml coverage.info --output-directory coverage_html
+
+2. Codecov 통합 (1시간)
+   - codecov.yml 설정 파일 작성
+   - GitHub Actions 워크플로우에 추가:
+
+   - name: Upload coverage to Codecov
+     uses: codecov/codecov-action@v3
+     with:
+       files: ./build-coverage/coverage.info
+
+   - README.md에 배지 추가:
+     [![codecov](https://codecov.io/.../badge.svg)](https://codecov.io/...)
 
 3. 커버리지 개선 (2-3시간)
-   - 낮은 커버리지 영역 식별
-   - 추가 테스트 작성
-   - 목표: 80%+ 커버리지
+   - 현재 커버리지 측정
+   - 낮은 커버리지 파일 식별
+   - 추가 테스트 작성 (특히 에러 처리 경로)
 ```
+
+**기대 효과**:
+- 테스트 품질 정량화
+- CI에서 자동 리포팅
+- 코드 신뢰성 향상
 
 ---
 
-### C3. Docker 컨테이너화 ⭐
-**난이도**: 🟡 쉬움
-**예상 시간**: 2-3시간
+### C4. 패키지 매니저 지원 ⭐⭐
+**난이도**: 🔴 중간
+**예상 시간**: 각 4-8시간
+**목표**: 사용자 설치 편의성 극대화
+
+**옵션 1: Conan (추천)**
+```
+1. conanfile.py 작성 (2-3시간)
+
+from conan import ConanFile
+from conan.tools.cmake import CMakeToolchain, CMake
+
+class KooChemicalSimulationConan(ConanFile):
+    name = "koolab"
+    version = "6.0.0"
+    license = "MIT"
+    url = "https://github.com/squall321/KooChemicalSimulation"
+    description = "Chemical simulation library"
+    settings = "os", "compiler", "build_type", "arch"
+
+    requires = [
+        "gtest/1.14.0",
+        "pybind11/2.11.1"
+    ]
+
+    def generate(self):
+        tc = CMakeToolchain(self)
+        tc.generate()
+
+    def build(self):
+        cmake = CMake(self)
+        cmake.configure()
+        cmake.build()
+
+2. 로컬 테스트 (1시간)
+   conan create . --build=missing
+   conan test test_package koolab/6.0.0
+
+3. Conan Center 제출 (1-2시간)
+   - 레시피 검증
+   - PR 생성
+```
+
+**옵션 2: vcpkg**
+```
+1. vcpkg.json 작성 (1시간)
+
+{
+  "name": "koolab",
+  "version": "6.0.0",
+  "dependencies": [
+    "gtest",
+    "pybind11"
+  ]
+}
+
+2. portfile.cmake 작성 (2시간)
+3. vcpkg 레지스트리에 제출 (1시간)
+```
+
+**추천**: Conan이 더 현대적이고 Python 통합이 우수
+
+**기대 효과**:
+- 원클릭 설치
+- 의존성 자동 관리
+- 사용자 증가
+
+---
+
+### C3. Apptainer 컨테이너화 ⭐⭐⭐ (Docker → Apptainer 변경)
+**난이도**: 🟡 쉬움-중간
+**예상 시간**: 3-4시간
+**목표**: HPC 환경에서 쉬운 배포
 
 **작업**:
 ```
-1. Dockerfile 작성
-   - 베이스 이미지: ubuntu:22.04
-   - 모든 의존성 설치
-   - 프로젝트 빌드
-   - 예상: 1시간
+1. Apptainer definition file 작성 (2시간)
 
-2. docker-compose.yml
-   - 서비스 정의
-   - 볼륨 마운트
-   - 네트워크 설정
-   - 예상: 30분
+   파일명: koolab.def
 
-3. CUDA Docker 지원
-   - nvidia/cuda 베이스 이미지
-   - GPU 활성화
-   - 예상: 1시간
+Bootstrap: docker
+From: ubuntu:22.04
+
+%post
+    # 기본 패키지 설치
+    apt-get update && apt-get install -y \
+        build-essential \
+        cmake \
+        git \
+        python3 \
+        python3-pip \
+        libgtest-dev \
+        wget
+
+    # Python 패키지
+    pip3 install numpy matplotlib jupyter pybind11
+
+    # 프로젝트 클론 및 빌드
+    cd /opt
+    git clone https://github.com/squall321/KooChemicalSimulation.git
+    cd KooChemicalSimulation
+    cmake -B build -DCMAKE_BUILD_TYPE=Release \
+                   -DBUILD_PYTHON_BINDINGS=ON \
+                   -DBUILD_TESTS=ON
+    cmake --build build -j$(nproc)
+    cmake --install build --prefix /usr/local
+
+%environment
+    export PATH=/usr/local/bin:$PATH
+    export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+    export PYTHONPATH=/usr/local/lib/python3.10/site-packages:$PYTHONPATH
+
+%runscript
+    echo "KooLab Chemical Simulation v6.0.0"
+    echo "Usage: apptainer run koolab.sif <example_name>"
+    exec "$@"
+
+%help
+    This container includes KooLab Chemical Simulation Library
+
+    To run examples:
+      apptainer run koolab.sif /usr/local/bin/full_simulation_example
+
+    To start Python:
+      apptainer exec koolab.sif python3 -c "import _core as koo; print(koo.__version__)"
+
+    To run Jupyter:
+      apptainer exec koolab.sif jupyter notebook --ip=0.0.0.0
+
+2. GPU 지원 definition file (1시간)
+
+   파일명: koolab_gpu.def
+
+Bootstrap: docker
+From: nvidia/cuda:12.0-devel-ubuntu22.04
+
+%post
+    # CUDA 및 기타 패키지 설치
+    apt-get update && apt-get install -y \
+        build-essential cmake git python3-pip
+
+    # 위와 동일한 빌드 프로세스
+    # 단, -DUSE_CUDA=ON 추가
+
+3. 빌드 및 테스트 (30분)
+
+   # CPU 버전 빌드
+   sudo apptainer build koolab.sif koolab.def
+
+   # GPU 버전 빌드
+   sudo apptainer build koolab_gpu.sif koolab_gpu.def
+
+   # 테스트
+   apptainer exec koolab.sif /usr/local/bin/koolab_tests
+
+   # GPU 테스트 (GPU 있는 경우)
+   apptainer exec --nv koolab_gpu.sif /usr/local/bin/koolab_tests
+
+4. 문서 작성 (30분)
+
+   파일명: APPTAINER_GUIDE.md
+
+   내용:
+   - Apptainer 설치 방법
+   - 컨테이너 빌드 방법
+   - 실행 예제
+   - HPC 클러스터에서 사용법
+   - 싱글 노드 / 멀티 노드 실행
 ```
 
-**Dockerfile 예시**:
-```dockerfile
-FROM ubuntu:22.04
+**Apptainer vs Docker 장점**:
+- HPC 클러스터에서 표준
+- root 권한 없이 실행 가능
+- MPI 통합 용이
+- 보안성 우수
+- 기존 Docker 이미지 변환 가능
 
-RUN apt-get update && apt-get install -y \
-    cmake g++ libgtest-dev python3-pip
-
-COPY . /app
-WORKDIR /app
-
-RUN cmake -B build && cmake --build build
-
-ENTRYPOINT ["./build/examples/full_simulation_example"]
-```
+**기대 효과**:
+- HPC 환경 즉시 사용 가능
+- 의존성 문제 완전 해결
+- 재현성 100% 보장
 
 ---
 
-### C4. 패키지 관리자 지원 ⭐
-**난이도**: 🔴 중간-어려움
-**예상 시간**: 각 1-2일
+## 🚀 Priority C 추천 순서
 
-**작업**:
+### 단계 1: 코드 품질 기반 구축
 ```
-1. Conda 패키지 (2일)
-   - meta.yaml 작성
-   - conda-forge 제출
-   - 테스트
-
-2. vcpkg 포트 (1일)
-   - portfile.cmake 작성
-   - 의존성 정의
-   - 제출
-
-3. Conan 레시피 (1일)
-   - conanfile.py 작성
-   - Conan Center 제출
-
-4. Debian/Ubuntu 패키지 (2일)
-   - debian/ 디렉토리 설정
-   - .deb 패키지 생성
-   - PPA 등록
+C1: 코드 품질 도구 (3시간)
+├── clang-format 설정
+├── clang-tidy 설정
+└── cppcheck + CI 통합
 ```
+**이유**: 나머지 작업 전에 코드 일관성 확보
+
+### 단계 2: 품질 측정
+```
+C2: 테스트 커버리지 (5시간)
+├── gcov/lcov 설정
+├── Codecov 통합
+└── 추가 테스트 작성
+```
+**이유**: 품질 기준선 설정
+
+### 단계 3: 의존성 관리
+```
+C4: 패키지 매니저 (6시간)
+└── Conan 레시피 작성 및 테스트
+```
+**이유**: 사용자 설치 개선
+
+### 단계 4: 배포 환경
+```
+C3: Apptainer 컨테이너화 (4시간)
+├── CPU 버전 definition file
+├── GPU 버전 definition file
+└── 문서 및 가이드
+```
+**이유**: HPC 환경 배포 완성
+
+**총 예상 시간**: 18-20시간
 
 ---
 
-## 우선순위 D: 장기 목표 (Long-term)
+## 📋 우선순위 D: 장기 목표 (Long-term)
 
 ### D1. GUI 개발 🎨
 **난이도**: 🔴🔴 어려움
 **예상 시간**: 2-3주
 
-**옵션 1: ImGui + OpenGL**
+**추천 옵션: ImGui + OpenGL**
 ```
 장점:
-- 빠른 개발
-- 가벼움
+- 빠른 개발 (2주)
+- 가벼움 (< 10MB)
 - 크로스 플랫폼
+- 실시간 렌더링
+- 과학 시각화에 적합
 
-단점:
-- 기본적인 UI만
-
-예상 시간: 2주
-```
-
-**옵션 2: Qt**
-```
-장점:
-- 전문적인 UI
-- 풍부한 위젯
-- 크로스 플랫폼
-
-단점:
-- 학습 곡선
-- 무거움
-
-예상 시간: 3-4주
-```
-
-**옵션 3: Web-based (React + Three.js)**
-```
-장점:
-- 현대적인 UI
-- 웹 배포 가능
-- 모바일 지원
-
-단점:
-- 백엔드 필요
-- 복잡성
-
-예상 시간: 4-6주
-```
-
-**기능**:
-```
-- 메시 시각화
-- 파라미터 입력 패널
-- 실시간 결과 플롯
-- 애니메이션 재생
-- 파일 불러오기/저장
+구현 계획:
+1. ImGui 기본 통합 (3일)
+2. 메시 시각화 (4일)
+3. 파라미터 패널 (2일)
+4. 실시간 플롯 (3일)
+5. 파일 I/O (2일)
 ```
 
 ---
 
 ### D2. 추가 물리 솔버 구현 🔬
 **난이도**: 🔴🔴 어려움
-**예상 시간**: 각 4-6주
+**예상 시간**: 각 4-8주
 
-**D2.1 비정상 Navier-Stokes**
+**D2.1 비정상 Navier-Stokes (6-8주)**
 ```
-작업:
-1. 속도-압력 결합 (SIMPLE 알고리즘)
-2. 난류 모델 (k-ε, LES)
-3. 비압축성/압축성 플로우
-4. 자유 표면 (VOF)
-
-예상 시간: 6-8주
+- SIMPLE/PISO 알고리즘
+- 난류 모델 (k-ε, SST)
+- 압축성/비압축성
+- 자유 표면 (VOF)
 ```
 
-**D2.2 전기화학 모듈**
+**D2.2 전기화학 모듈 (4-6주)**
 ```
-작업:
-1. 전위 방정식
-2. 이온 이동 방정식
-3. Butler-Volmer 반응
-4. 배터리 모델링
-
-예상 시간: 4-6주
+- Poisson 방정식
+- Nernst-Planck 방정식
+- Butler-Volmer 반응
+- 리튬이온 배터리 모델
 ```
 
-**D2.3 멀티스케일 모델**
+**D2.3 멀티스케일 모델 (8-12주)**
 ```
-작업:
-1. 분자 동역학 인터페이스
-2. 거시-미시 결합
-3. 정보 전달 알고리즘
-
-예상 시간: 8-12주
+- 분자 동역학 인터페이스
+- 거시-미시 결합
+- 정보 전달 알고리즘
 ```
 
 ---
@@ -469,188 +421,147 @@ ENTRYPOINT ["./build/examples/full_simulation_example"]
 ```
 1. 대리 모델 (Surrogate Model)
    - 신경망으로 PDE 근사
-   - 빠른 예측
-   - 파라미터 스터디
+   - PyTorch/LibTorch 통합
+   - 파라미터 스터디 가속
 
-2. 자동 파라미터 최적화
-   - 유전 알고리즘
+2. 물리 정보 신경망 (PINN)
+   - 물리 법칙을 loss function에 포함
+   - 데이터 부족 환경에서 학습
+
+3. 자동 파라미터 최적화
    - 베이지안 최적화
    - 강화 학습
-
-3. 이상 감지
-   - 시뮬레이션 결과 검증
-   - 비정상 패턴 탐지
-
-4. 데이터 기반 모델링
-   - 실험 데이터로 학습
-   - 물리 정보 신경망 (PINN)
 ```
-
-**의존성**:
-- PyTorch 또는 TensorFlow
-- scikit-learn
-- 대용량 데이터셋
 
 ---
 
-### D4. 클라우드 배포 ☁️
+### D4. 클라우드/HPC 확장 ☁️
 **난이도**: 🔴🔴 어려움
 **예상 시간**: 3-4주
 
 **작업**:
 ```
-1. 웹 API 개발 (1주)
-   - RESTful API (FastAPI)
-   - 작업 큐 (Celery)
-   - 데이터베이스 (PostgreSQL)
+1. MPI 병렬화 (2주)
+   - 도메인 분해
+   - 통신 최적화
+   - 약한/강한 스케일링
 
 2. Kubernetes 배포 (1주)
-   - Deployment YAML
-   - Service 정의
-   - Ingress 설정
+   - Job/CronJob 정의
+   - 병렬 작업 관리
 
-3. AWS/Azure/GCP 통합 (1주)
-   - EC2/VM 설정
-   - S3/Blob 스토리지
-   - 로드 밸런싱
-
-4. 모니터링 (1주)
+3. 모니터링 (1주)
    - Prometheus + Grafana
-   - 로그 수집 (ELK)
-   - 알림 설정
+   - 성능 메트릭 수집
 ```
 
 ---
 
-## 📋 작업 우선순위 매트릭스
+## 📈 작업 우선순위 매트릭스 (업데이트)
 
-| 작업 | 중요도 | 긴급도 | 난이도 | 시간 | 우선순위 |
-|------|--------|--------|--------|------|----------|
-| Python 바인딩 완성 | ⭐⭐⭐ | 높음 | 중 | 2-3h | **A1** |
-| 미사용 변수 정리 | ⭐⭐ | 중 | 쉬움 | 1-2h | **A2** |
-| CI 배지 추가 | ⭐ | 중 | 쉬움 | 30m | **A3** |
-| 문서화 | ⭐⭐ | 중 | 쉬움 | 4-6h | **B1** |
-| 벤치마크 | ⭐⭐ | 낮음 | 중 | 6-8h | **B2** |
-| 추가 예제 | ⭐⭐ | 낮음 | 중 | 4-6h | **B3** |
-| Jupyter Notebook | ⭐ | 낮음 | 쉬움 | 3-4h | **B4** |
-| 코드 품질 도구 | ⭐ | 낮음 | 쉬움 | 2-3h | **C1** |
-| 테스트 커버리지 | ⭐ | 낮음 | 중 | 4-6h | **C2** |
-| Docker | ⭐ | 낮음 | 쉬움 | 2-3h | **C3** |
-| 패키지 관리자 | ⭐ | 낮음 | 중 | 1-2일 | **C4** |
-| GUI | ⭐⭐ | 낮음 | 어려움 | 2-3주 | **D1** |
-| 추가 솔버 | ⭐⭐⭐ | 낮음 | 어려움 | 4-8주 | **D2** |
-| 기계 학습 | ⭐⭐ | 낮음 | 매우 어려움 | 2-3개월 | **D3** |
-| 클라우드 | ⭐ | 낮음 | 어려움 | 3-4주 | **D4** |
+| 작업 | 중요도 | 긴급도 | 난이도 | 시간 | 상태 |
+|------|--------|--------|--------|------|------|
+| **Priority A** | | | | | |
+| A1: Python 바인딩 | ⭐⭐⭐ | 높음 | 중 | 3h | ✅ 완료 |
+| A2: 미사용 변수 정리 | ⭐⭐ | 중 | 쉬움 | 2h | ✅ 완료 |
+| A3: CI 배지 추가 | ⭐ | 중 | 쉬움 | 30m | ✅ 완료 |
+| **Priority B** | | | | | |
+| B1: 문서화 | ⭐⭐⭐ | 중 | 쉬움 | 6h | ✅ 완료 |
+| B2: 벤치마크 | ⭐⭐ | 낮음 | 중 | 6h | ✅ 완료 |
+| B3: 추가 예제 | ⭐⭐ | 낮음 | 중 | 5h | ✅ 완료 |
+| B4: Jupyter Notebooks | ⭐⭐ | 낮음 | 쉬움 | 4h | ✅ 완료 |
+| **Priority C** | | | | | |
+| C1: 코드 품질 도구 | ⭐⭐ | 중 | 쉬움 | 3h | ⏳ 다음 |
+| C2: 테스트 커버리지 | ⭐⭐ | 중 | 중 | 5h | 🔜 대기 |
+| C4: 패키지 매니저 | ⭐⭐ | 낮음 | 중 | 6h | 🔜 대기 |
+| C3: Apptainer | ⭐⭐⭐ | 낮음 | 중 | 4h | 🔜 대기 |
+| **Priority D** | | | | | |
+| D1: GUI | ⭐⭐ | 낮음 | 어려움 | 2-3주 | 📋 계획 |
+| D2: 추가 솔버 | ⭐⭐⭐ | 낮음 | 어려움 | 4-8주 | 📋 계획 |
+| D3: 기계 학습 | ⭐⭐ | 낮음 | 매우 어려움 | 2-3개월 | 📋 계획 |
+| D4: 클라우드/HPC | ⭐⭐ | 낮음 | 어려움 | 3-4주 | 📋 계획 |
 
 ---
 
-## 🎯 추천 작업 순서
+## 🎯 다음 세션 작업 계획
 
-### 이번 주 (10-15시간)
-1. **A1**: Python 바인딩 완성 (3시간)
-2. **A2**: 미사용 변수 정리 (2시간)
-3. **A3**: CI 배지 추가 (30분)
-4. **B1**: GETTING_STARTED.md 작성 (2시간)
-5. **B3**: multi_physics_example.cpp (3시간)
+### 즉시 시작 (Priority C)
+```
+✅ C1: 코드 품질 도구 (3시간)
+   ├── .clang-format 생성 및 적용
+   ├── .clang-tidy 설정 및 CI 통합
+   └── cppcheck 추가
 
-### 다음 주 (15-20시간)
-6. **B1**: TUTORIALS.md + API_REFERENCE.md (4시간)
-7. **C1**: clang-format 표준화 (2시간)
-8. **C3**: Docker 컨테이너화 (3시간)
-9. **B2**: CPU 벤치마크 (4시간)
-10. **B4**: Jupyter Notebooks (4시간)
+→ C2: 테스트 커버리지 (5시간)
+   ├── gcov/lcov CMake 설정
+   ├── Codecov 통합
+   └── 커버리지 개선
 
-### 이번 달 (40-60시간)
-11. **C2**: 테스트 커버리지 (6시간)
-12. **B2**: GPU 벤치마크 (4시간)
-13. **C4**: Conda 패키지 (2일)
-14. **D1**: GUI 프로토타입 시작 (2주)
+→ C4: 패키지 매니저 (6시간)
+   └── Conan 레시피 작성
 
-### 장기 (3-6개월)
-15. **D2**: 추가 솔버 구현
-16. **D3**: 기계 학습 통합
-17. **D4**: 클라우드 배포
+→ C3: Apptainer (4시간)
+   ├── CPU 버전 definition file
+   ├── GPU 버전 definition file
+   └── APPTAINER_GUIDE.md
+```
+
+**예상 총 시간**: 18-20시간
+
+### 이번 세션 목표
+- Priority C 완료 → 프로젝트 인프라 완성
 
 ---
 
 ## 💡 빠른 승리 (Quick Wins)
 
-다음 작업들은 **적은 노력으로 큰 효과**를 얻을 수 있습니다:
+Priority C에서 적은 노력으로 큰 효과:
 
-1. **A3**: CI 배지 추가 (30분) → README 전문성 ⬆️
-2. **C3**: Docker (3시간) → 설치 편의성 ⬆️⬆️⬆️
-3. **B1**: GETTING_STARTED.md (2시간) → 사용자 유입 ⬆️⬆️
-4. **C1**: clang-format (2시간) → 코드 일관성 ⬆️⬆️
-
----
-
-## 📈 영향도 분석
-
-### 사용자 영향 (User Impact)
-1. 🥇 Python 바인딩 (사용 편의성++)
-2. 🥇 문서화 (진입 장벽--)
-3. 🥈 Docker (설치 문제--)
-4. 🥈 추가 예제 (이해도++)
-5. 🥉 GUI (접근성++)
-
-### 개발자 영향 (Developer Impact)
-1. 🥇 CI 배지 (신뢰도++)
-2. 🥇 코드 품질 도구 (유지보수성++)
-3. 🥈 테스트 커버리지 (안정성++)
-4. 🥈 Docker (개발 환경 통일)
-5. 🥉 미사용 변수 정리 (깔끔함++)
-
-### 연구 영향 (Research Impact)
-1. 🥇 추가 솔버 (적용 범위++)
-2. 🥇 벤치마크 (논문 자료)
-3. 🥈 기계 학습 통합 (혁신성++)
-4. 🥉 성능 최적화 (경쟁력++)
+1. **C1**: clang-format (30분) → 코드 일관성 즉시 확보 ⬆️⬆️⬆️
+2. **C3**: Apptainer (4시간) → HPC 사용자 확보 ⬆️⬆️⬆️
+3. **C4**: Conan (6시간) → 설치 장벽 완전 제거 ⬆️⬆️
 
 ---
 
-## 🚫 하지 않아도 되는 것
+## 📊 전체 프로젝트 진행률
 
-다음은 **현재 필요하지 않은** 작업들:
-
-1. ❌ 모든 Phase의 GTest 테스트 (Phase 66-70 simple test로 충분)
-2. ❌ Python 2 지원 (Python 3만으로 충분)
-3. ❌ Windows/macOS CI (Linux CI로 시작)
-4. ❌ 모든 패키지 관리자 지원 (하나만 시작)
-5. ❌ 완벽한 코드 커버리지 100% (80%면 충분)
-
----
-
-## 📝 결론
-
-### 즉시 추천 (이번 주)
 ```
-✅ A1: Python 바인딩 완성
-✅ A2: 미사용 변수 정리
-✅ A3: CI 배지 추가
-✅ B1: 기본 문서 작성
-```
-
-**예상 총 시간**: 8-10시간
-**효과**: 프로젝트가 완전히 프로덕션 준비 완료 + 사용자 친화적
-
-### 중기 목표 (이번 달)
-```
-✅ 전체 문서 완성
-✅ Docker 컨테이너화
-✅ 추가 예제 프로그램
-✅ 코드 품질 도구
-```
-
-### 장기 목표 (3-6개월)
-```
-✅ GUI 개발
-✅ 추가 물리 솔버
-✅ 기계 학습 통합
-✅ 클라우드 배포
+Priority A (핵심):     ████████████████████ 100% ✅
+Priority B (문서/예제): ████████████████████ 100% ✅
+Priority C (인프라):    ░░░░░░░░░░░░░░░░░░░░   0% ⏳
+Priority D (확장):     ░░░░░░░░░░░░░░░░░░░░   0% 📋
+────────────────────────────────────────────────
+전체:                  ██████████░░░░░░░░░░  50%
 ```
 
 ---
 
-**현재 프로젝트는 이미 프로덕션 준비가 완료되었으며, 위의 모든 작업은 "더 좋게 만들기" 위한 것입니다.**
+## 📝 요약
 
-**핵심**: 빠른 승리를 먼저 달성하여 momentum을 유지하세요! 🚀
+### 완료됨 (2개 세션)
+- ✅ 모든 타입 변환 경고 제거
+- ✅ Python 바인딩 완전 수정
+- ✅ CI/CD 파이프라인 + 배지
+- ✅ 완전한 문서화 (3개 주요 문서)
+- ✅ Jupyter Notebook 튜토리얼 (4개)
+- ✅ 고급 예제 프로그램 (3개)
+- ✅ 성능 벤치마크 인프라
+
+### 진행 중
+- ⏳ Priority C: 코드 품질 및 배포 개선
+
+### 다음 단계
+1. C1: 코드 품질 도구 설정
+2. C2: 테스트 커버리지 측정
+3. C4: Conan 패키지 매니저
+4. C3: Apptainer 컨테이너화
+
+**프로젝트는 이미 프로덕션 수준이며, Priority C는 배포 및 유지보수를 더욱 개선하는 작업입니다.** 🚀
+
+---
+
+**다음 세션 시작 시 실행할 명령**:
+```bash
+git status
+git log --oneline -5
+# Priority C1부터 시작
