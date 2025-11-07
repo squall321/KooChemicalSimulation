@@ -67,9 +67,9 @@ public:
      */
     void setSpeciesData(int species_id, const ThermochemicalData& data) {
         if (species_id >= static_cast<int>(species_data_.size())) {
-            species_data_.resize(species_id + 1);
+            species_data_.resize(static_cast<size_t>(species_id) + 1);
         }
-        species_data_[species_id] = data;
+        species_data_[static_cast<size_t>(species_id)] = data;
     }
 
     /**
@@ -122,14 +122,14 @@ public:
         // Products contribution
         for (size_t i = 0; i < product_ids.size(); ++i) {
             if (product_ids[i] < static_cast<int>(species_data_.size())) {
-                delta_H += stoich_products[i] * species_data_[product_ids[i]].heat_of_formation;
+                delta_H += stoich_products[i] * species_data_[static_cast<size_t>(product_ids[i])].heat_of_formation;
             }
         }
 
         // Reactants contribution
         for (size_t i = 0; i < reactant_ids.size(); ++i) {
             if (reactant_ids[i] < static_cast<int>(species_data_.size())) {
-                delta_H -= stoich_reactants[i] * species_data_[reactant_ids[i]].heat_of_formation;
+                delta_H -= stoich_reactants[i] * species_data_[static_cast<size_t>(reactant_ids[i])].heat_of_formation;
             }
         }
 
@@ -302,7 +302,7 @@ public:
      * @param operator_type 0=chemistry, 1=thermal
      * @return Substep size
      */
-    double getSubstepSize(double dt, int step_number, int operator_type) const {
+    double getSubstepSize(double dt, [[maybe_unused]] int step_number, int operator_type) const {
         switch (scheme_) {
             case SplittingScheme::Sequential:
                 return dt;  // Full step for each operator

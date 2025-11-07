@@ -223,7 +223,7 @@ public:
         stats.num_accepted = num_accepted_;
         stats.num_rejected = num_rejected_;
         stats.acceptance_rate = num_steps_ > 0 ?
-            static_cast<double>(num_accepted_) / (num_accepted_ + num_rejected_) : 0.0;
+            static_cast<double>(num_accepted_) / static_cast<double>(num_accepted_ + num_rejected_) : 0.0;
         return stats;
     }
 
@@ -285,7 +285,7 @@ private:
                     for (size_t i = 0; i < n; ++i) {
                         sol_norm += solution_new[i] * solution_new[i];
                     }
-                    sol_norm = std::sqrt(sol_norm / n);
+                    sol_norm = std::sqrt(sol_norm / static_cast<double>(n));
                     scaled_error = error_estimate / (config_.rel_tol * std::max(sol_norm, 1.0));
                 }
                 break;
@@ -315,7 +315,7 @@ private:
                         double err_i = std::abs(solution_new[i] - solution[i]) / scale;
                         sum_sq += err_i * err_i;
                     }
-                    scaled_error = std::sqrt(sum_sq / n);
+                    scaled_error = std::sqrt(sum_sq / static_cast<double>(n));
                 }
                 break;
         }

@@ -326,11 +326,11 @@ private:
 
         // Count sign changes in derivative
         size_t n_vars = solution_history_[0].size();
-        int total_sign_changes = 0;
-        int max_possible_changes = (solution_history_.size() - 2) * n_vars;
+        size_t total_sign_changes = 0;
+        size_t max_possible_changes = (solution_history_.size() - 2) * n_vars;
 
         for (size_t i = 0; i < n_vars; ++i) {
-            int sign_changes = 0;
+            size_t sign_changes = 0;
             for (size_t t = 1; t < solution_history_.size() - 1; ++t) {
                 double deriv_prev = solution_history_[t][i] - solution_history_[t-1][i];
                 double deriv_next = solution_history_[t+1][i] - solution_history_[t][i];
@@ -343,7 +343,7 @@ private:
         }
 
         // Oscillation index: fraction of sign changes
-        return static_cast<double>(total_sign_changes) / max_possible_changes;
+        return static_cast<double>(total_sign_changes) / static_cast<double>(max_possible_changes);
     }
 };
 

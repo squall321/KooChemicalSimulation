@@ -61,10 +61,10 @@ public:
      */
     ReactiveDiffusionSimulation(int nx, double Lx)
         : nx_(nx), Lx_(Lx), dx_(Lx / (nx - 1)),
-          concentration_(nx, 0.0),
-          temperature_(nx, 300.0),  // 300 K initial
-          concentration_prev_(nx, 0.0),
-          temperature_prev_(nx, 300.0) {
+          concentration_(static_cast<size_t>(nx), 0.0),
+          temperature_(static_cast<size_t>(nx), 300.0),  // 300 K initial
+          concentration_prev_(static_cast<size_t>(nx), 0.0),
+          temperature_prev_(static_cast<size_t>(nx), 300.0) {
 
         // Physical parameters
         diffusivity_ = 1e-5;          // m²/s
@@ -106,8 +106,8 @@ public:
 
         for (int i = 0; i < nx_; ++i) {
             double x = i * dx_;
-            concentration_[i] = std::exp(-std::pow((x - x0) / sigma, 2));
-            temperature_[i] = 300.0;  // Room temperature
+            concentration_[static_cast<size_t>(i)] = std::exp(-std::pow((x - x0) / sigma, 2));
+            temperature_[static_cast<size_t>(i)] = 300.0;  // Room temperature
         }
 
         concentration_prev_ = concentration_;
@@ -231,30 +231,32 @@ private:
         // Explicit Euler with operator splitting
         // Step 1: Diffusion
         for (int i = 1; i < nx_ - 1; ++i) {
+            size_t idx = static_cast<size_t>(i);
             // Species diffusion
-            double d2c_dx2 = (concentration_[i+1] - 2*concentration_[i] + concentration_[i-1]) / (dx_ * dx_);
-            c_new[i] += dt * diffusivity_ * d2c_dx2;
+            double d2c_dx2 = (concentration_[idx+1] - 2*concentration_[idx] + concentration_[idx-1]) / (dx_ * dx_);
+            c_new[idx] += dt * diffusivity_ * d2c_dx2;
 
             // Thermal diffusion
-            double d2T_dx2 = (temperature_[i+1] - 2*temperature_[i] + temperature_[i-1]) / (dx_ * dx_);
-            T_new[i] += dt * thermal_diffusivity_ * d2T_dx2;
+            double d2T_dx2 = (temperature_[idx+1] - 2*temperature_[idx] + temperature_[idx-1]) / (dx_ * dx_);
+            T_new[idx] += dt * thermal_diffusivity_ * d2T_dx2;
         }
 
         // Step 2: Reaction with thermal coupling
         for (int i = 0; i < nx_; ++i) {
+            size_t idx = static_cast<size_t>(i);
             // Temperature-dependent rate constant
             double k = thermal_chemical_->computeReactionRate(
-                pre_exp_factor_, activation_energy_, T_new[i]);
+                pre_exp_factor_, activation_energy_, T_new[idx]);
 
             // Reaction: A -> B (first order)
-            double reaction_rate = k * c_new[i];
-            c_new[i] -= dt * reaction_rate;
+            double reaction_rate = k * c_new[idx];
+            c_new[idx] -= dt * reaction_rate;
 
             // Heat release from reaction
             double heat_release = -heat_of_reaction_ * reaction_rate;  // J/m³/s
             double dT = thermal_chemical_->computeTemperatureChange(
                 heat_release, density_, specific_heat_, dt);
-            T_new[i] += dT;
+            T_new[idx] += dT;
         }
 
         // Evaluate timestep acceptance
@@ -288,7 +290,7 @@ private:
 /**
  * @brief Main function
  */
-int main(int argc, char** argv) {
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv) {
     std::cout << "KooChemicalSimulation v6.0.0-alpha4\n";
     std::cout << "Full Simulation Example\n";
     std::cout << "=================================\n\n";
