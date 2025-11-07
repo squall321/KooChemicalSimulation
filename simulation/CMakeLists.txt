@@ -34,7 +34,7 @@ if(BUILD_TESTING)
 
     # Check if GTest is available
     if(TARGET GTest::gtest)
-        # Phase 66-70 comprehensive test
+        # Phase 66-70 comprehensive test with GTest
         add_executable(test_phase66_70 tests/test_phase66_70.cpp)
 
         target_link_libraries(test_phase66_70 PRIVATE
@@ -51,11 +51,27 @@ if(BUILD_TESTING)
 
         add_test(NAME SimulationPhase66_70 COMMAND test_phase66_70)
 
-        message(STATUS "  Test executable: test_phase66_70")
+        message(STATUS "  Test executable: test_phase66_70 (with GTest)")
         message(STATUS "  Tests for Phase 66-70 configured")
     else()
-        message(STATUS "  GTest not found - skipping Phase 66-70 tests")
-        message(STATUS "  Install GTest to enable testing")
+        # Simple test without GTest
+        add_executable(test_phase66_70_simple tests/test_phase66_70_simple.cpp)
+
+        target_link_libraries(test_phase66_70_simple PRIVATE
+            koo_simulation
+            koo_utils
+        )
+
+        # If GPU available, link GPU libraries
+        if(TARGET koo_gpu)
+            target_link_libraries(test_phase66_70_simple PRIVATE koo_gpu)
+        endif()
+
+        add_test(NAME SimulationPhase66_70_Simple COMMAND test_phase66_70_simple)
+
+        message(STATUS "  Test executable: test_phase66_70_simple (no GTest)")
+        message(STATUS "  Tests for Phase 66-70 configured (simple version)")
+        message(STATUS "  Install GTest for comprehensive testing")
     endif()
 endif()
 
