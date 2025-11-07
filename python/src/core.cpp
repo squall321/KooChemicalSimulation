@@ -13,8 +13,8 @@
 #include <pybind11/numpy.h>
 
 // Core headers
-#include "core/types/Vector.h"
-#include "core/types/Matrix.h"
+#include "core/types/CommonTypes.h"
+#include "core/types/PhysicalQuantity.h"
 #include "utils/logger/Logger.h"
 #include "utils/error/Exception.h"
 

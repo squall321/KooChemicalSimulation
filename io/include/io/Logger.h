@@ -177,8 +177,8 @@ public:
         if (step % reportInterval_ == 0 || step == totalSteps_) {
             double percent = 100.0 * step / totalSteps_;
             auto elapsed = std::time(nullptr) - startTime_;
-            double rate = elapsed > 0 ? static_cast<double>(step) / elapsed : 0.0;
-            int remaining = rate > 0 ? (totalSteps_ - step) / rate : 0;
+            double rate = elapsed > 0 ? static_cast<double>(step) / static_cast<double>(elapsed) : 0.0;
+            int remaining = rate > 0 ? static_cast<int>((totalSteps_ - step) / rate) : 0;
 
             std::stringstream ss;
             ss << "Progress: " << step << "/" << totalSteps_

@@ -15,7 +15,7 @@
 // Chemistry headers
 #include "chemistry/species/Species.h"
 #include "chemistry/reaction/Reaction.h"
-#include "chemistry/kinetics/ArrheniusRate.h"
+#include "chemistry/kinetics/ChemicalSystem.h"
 
 namespace py = pybind11;
 

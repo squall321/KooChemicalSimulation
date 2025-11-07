@@ -434,7 +434,7 @@ public:
         if (measureCount > 0) {
             stats.minElementSize = minSize;
             stats.maxElementSize = maxSize;
-            stats.avgElementSize = totalSize / measureCount;
+            stats.avgElementSize = totalSize / static_cast<double>(measureCount);
         }
 
         return stats;
