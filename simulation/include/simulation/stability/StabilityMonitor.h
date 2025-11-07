@@ -18,6 +18,8 @@
 #include <vector>
 #include <cmath>
 #include <deque>
+#include <map>
+#include <string>
 #include <algorithm>
 #include <limits>
 

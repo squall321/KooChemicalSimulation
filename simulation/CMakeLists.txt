@@ -32,25 +32,31 @@ target_compile_features(koo_simulation INTERFACE cxx_std_17)
 if(BUILD_TESTING)
     message(STATUS "Configuring simulation tests (Phase 66-70)...")
 
-    # Phase 66-70 comprehensive test
-    add_executable(test_phase66_70 tests/test_phase66_70.cpp)
+    # Check if GTest is available
+    if(TARGET GTest::gtest)
+        # Phase 66-70 comprehensive test
+        add_executable(test_phase66_70 tests/test_phase66_70.cpp)
 
-    target_link_libraries(test_phase66_70 PRIVATE
-        koo_simulation
-        koo_utils
-        GTest::gtest
-        GTest::gtest_main
-    )
+        target_link_libraries(test_phase66_70 PRIVATE
+            koo_simulation
+            koo_utils
+            GTest::gtest
+            GTest::gtest_main
+        )
 
-    # If GPU available, link GPU libraries
-    if(TARGET koo_gpu)
-        target_link_libraries(test_phase66_70 PRIVATE koo_gpu)
+        # If GPU available, link GPU libraries
+        if(TARGET koo_gpu)
+            target_link_libraries(test_phase66_70 PRIVATE koo_gpu)
+        endif()
+
+        add_test(NAME SimulationPhase66_70 COMMAND test_phase66_70)
+
+        message(STATUS "  Test executable: test_phase66_70")
+        message(STATUS "  Tests for Phase 66-70 configured")
+    else()
+        message(STATUS "  GTest not found - skipping Phase 66-70 tests")
+        message(STATUS "  Install GTest to enable testing")
     endif()
-
-    add_test(NAME SimulationPhase66_70 COMMAND test_phase66_70)
-
-    message(STATUS "  Test executable: test_phase66_70")
-    message(STATUS "  Tests for Phase 66-70 configured")
 endif()
 
 # ============================================

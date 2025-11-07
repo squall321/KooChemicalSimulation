@@ -23,7 +23,7 @@
 
 #ifdef KOO_USE_CUDA
 #include "gpu/Device.h"
-#include "gpu/DeviceMemory.h"
+#include "gpu/Memory.h"
 #include "gpu/Stream.h"
 #include "gpu/memory/MemoryPool.h"
 #include "gpu/memory/UnifiedMemory.h"

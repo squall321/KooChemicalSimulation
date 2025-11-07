@@ -18,6 +18,7 @@
 #include <vector>
 #include <cmath>
 #include <fstream>
+#include <memory>
 
 // Simulation components
 #include "simulation/timestepping/AdaptiveTimestepper.h"
@@ -132,7 +133,9 @@ public:
 
         // Main time loop
         while (t < t_end) {
+#ifdef KOO_USE_CUDA
             KOO_NVTX_RANGE("Simulation Step");
+#endif
 
             // Compute timestep
             double dt = timestepper_->getCurrentTimestep();
