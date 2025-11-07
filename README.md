@@ -1,5 +1,8 @@
 # KooChemicalSimulation
 
+![CI](https://github.com/squall321/KooChemicalSimulation/actions/workflows/ci.yml/badge.svg)
+![Quick Test](https://github.com/squall321/KooChemicalSimulation/actions/workflows/quick-test.yml/badge.svg)
+
 **Version**: 6.0.0-alpha4 🎉
 **Status**: Production Ready (100% Complete - All 70 Phases)
 
