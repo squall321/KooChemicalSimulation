@@ -5,20 +5,24 @@
 # Header files
 set(PARALLEL_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/parallel/mpi/MPIWrapper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/parallel/mpi/MPIAsync.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/parallel/domain/DomainDecomposition.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/parallel/linalg/ParallelVector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/parallel/io/ParallelIO.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/parallel/balance/LoadBalancing.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/parallel/solver/MPIDiffusionSolver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/parallel/solver/MPIReactionDiffusionSolver.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/parallel/solver/MPIDiffusionSolverOptimized.h
 )
 
 # Source files
 set(PARALLEL_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/mpi/MPIAsync.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/solver/MPIDiffusionSolver1D.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/solver/MPIDiffusionSolver2D.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/solver/MPIReactionDiffusionSolver1D.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/solver/MPIReactionDiffusionSolver2D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/solver/MPIDiffusionSolver1DOptimized.cpp
 )
 
 # Create library (now with sources)

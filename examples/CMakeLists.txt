@@ -87,7 +87,21 @@ if(ENABLE_MPI AND MPI_FOUND)
         CXX_STANDARD_REQUIRED ON
     )
 
-    message(STATUS "MPI examples configured (Priority D1 - diffusion + reaction-diffusion)")
+    # MPI Optimized diffusion example (D1.4)
+    add_executable(mpi_diffusion_optimized_example mpi_diffusion_optimized_example.cpp)
+    target_link_libraries(mpi_diffusion_optimized_example PRIVATE
+        koo_core
+        koo_utils
+        koo_physics
+        koo_parallel
+        koo_io
+    )
+    set_target_properties(mpi_diffusion_optimized_example PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+    )
+
+    message(STATUS "MPI examples configured (Priority D1 - diffusion + reaction-diffusion + optimized)")
 endif()
 
 message(STATUS "Examples configured (Phase 48, 70, D1 complete - v6.0.0-alpha5)")
