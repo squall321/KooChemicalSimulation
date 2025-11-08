@@ -1,0 +1,166 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%labels
+    Author KooLab Development Team
+    Version 6.0.0-alpha5
+    Description KooLab Chemical Simulation Library (CPU version)
+
+%help
+    KooLab Chemical Simulation Library v6.0.0-alpha5
+
+    This container includes the CPU version of KooLab with all dependencies.
+
+    Usage:
+        # Run example
+        apptainer run koolab.sif /opt/koolab/bin/diffusion_example
+
+        # Interactive shell
+        apptainer shell koolab.sif
+
+        # Execute command
+        apptainer exec koolab.sif /opt/koolab/bin/full_simulation_example
+
+        # Python interface
+        apptainer exec koolab.sif python3 -c "import _core as koo; print('KooLab loaded')"
+
+        # Jupyter notebook
+        apptainer exec koolab.sif jupyter notebook --ip=0.0.0.0 --port=8888
+
+    For more information:
+        https://github.com/squall321/KooChemicalSimulation
+
+%post
+    # Update and install basic tools
+    apt-get update && apt-get install -y \
+        build-essential \
+        cmake \
+        ninja-build \
+        git \
+        wget \
+        curl \
+        vim \
+        python3 \
+        python3-pip \
+        python3-dev \
+        pkg-config \
+        && rm -rf /var/lib/apt/lists/*
+
+    # Install C++ dependencies
+    apt-get update && apt-get install -y \
+        libeigen3-dev \
+        libfmt-dev \
+        libspdlog-dev \
+        nlohmann-json3-dev \
+        libyaml-cpp-dev \
+        libgtest-dev \
+        libhdf5-dev \
+        libvtk9-dev \
+        && rm -rf /var/lib/apt/lists/*
+
+    # Install Python dependencies
+    pip3 install --no-cache-dir \
+        numpy \
+        matplotlib \
+        scipy \
+        jupyter \
+        ipywidgets \
+        pybind11
+
+    # Clone KooLab repository
+    cd /opt
+    git clone https://github.com/squall321/KooChemicalSimulation.git koolab-src
+    cd koolab-src
+
+    # Checkout specific version
+    git checkout claude/project-status-review-011CUsQDsp6Q7ghbkTEHsovq
+
+    # Build KooLab (CPU version)
+    cmake -B build -G Ninja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/opt/koolab \
+        -DBUILD_SHARED_LIBS=ON \
+        -DBUILD_PYTHON_BINDINGS=ON \
+        -DBUILD_TESTS=ON \
+        -DBUILD_EXAMPLES=ON \
+        -DBUILD_BENCHMARKS=ON \
+        -DENABLE_OPENMP=ON \
+        -DENABLE_MPI=OFF \
+        -DBUILD_GPU=OFF
+
+    cmake --build build -j$(nproc)
+
+    # Run tests to verify build
+    cd build && ctest --output-on-failure
+
+    # Install
+    cmake --install build
+
+    # Install Python package
+    cd /opt/koolab-src/python
+    pip3 install --no-cache-dir .
+
+    # Create symbolic links for easy access
+    ln -s /opt/koolab/bin/* /usr/local/bin/ || true
+
+    # Cleanup to reduce image size
+    cd /
+    rm -rf /opt/koolab-src/build
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+
+%environment
+    # Set paths
+    export PATH=/opt/koolab/bin:$PATH
+    export LD_LIBRARY_PATH=/opt/koolab/lib:$LD_LIBRARY_PATH
+    export PYTHONPATH=/opt/koolab/lib/python3.10/site-packages:$PYTHONPATH
+
+    # OpenMP settings
+    export OMP_NUM_THREADS=4
+
+    # Locale
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+
+%runscript
+    #!/bin/bash
+    echo "KooLab Chemical Simulation Library v6.0.0-alpha5 (CPU)"
+    echo "========================================================"
+    echo ""
+
+    if [ $# -eq 0 ]; then
+        echo "Available executables:"
+        ls -1 /opt/koolab/bin/
+        echo ""
+        echo "Usage: apptainer run koolab.sif <executable> [args...]"
+        echo ""
+        echo "Examples:"
+        echo "  apptainer run koolab.sif /opt/koolab/bin/diffusion_example"
+        echo "  apptainer exec koolab.sif python3 -c 'import _core as koo'"
+        echo "  apptainer exec koolab.sif jupyter notebook --ip=0.0.0.0"
+    else
+        exec "$@"
+    fi
+
+%test
+    # Verify installation
+    echo "Testing KooLab installation..."
+
+    # Check binaries
+    test -f /opt/koolab/bin/full_simulation_example || exit 1
+    echo "✓ Binaries found"
+
+    # Check libraries
+    test -f /opt/koolab/lib/libkoolab_core.so || exit 1
+    echo "✓ Libraries found"
+
+    # Check Python module
+    python3 -c "import _core as koo" || exit 1
+    echo "✓ Python module working"
+
+    # Check headers
+    test -d /opt/koolab/include/koo || exit 1
+    echo "✓ Headers installed"
+
+    echo ""
+    echo "All tests passed! KooLab is ready to use."

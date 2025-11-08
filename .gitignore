@@ -33,3 +33,8 @@ conaninfo.txt
 conanbuildinfo.*
 graph_info.json
 CMakeUserPresets.json
+
+# Apptainer/Singularity
+*.sif
+*.simg
+overlay.img

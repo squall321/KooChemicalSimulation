@@ -215,6 +215,30 @@ conan create . -o with_python=True -o with_gpu=True --build=missing
 
 **See [CONAN_GUIDE.md](CONAN_GUIDE.md) for detailed instructions.**
 
+### Using Apptainer/Singularity (HPC Environments)
+
+[Apptainer](https://apptainer.org/) provides containerization for HPC environments:
+
+```bash
+# Clone repository
+git clone https://github.com/squall321/KooChemicalSimulation.git
+cd KooChemicalSimulation
+
+# Build CPU container
+sudo apptainer build koolab.sif koolab.def
+
+# Build GPU container
+sudo apptainer build koolab_gpu.sif koolab_gpu.def
+
+# Run (no sudo needed)
+apptainer run koolab.sif /opt/koolab/bin/diffusion_example
+
+# With GPU support
+apptainer run --nv koolab_gpu.sif /opt/koolab/bin/gpu_performance_comparison
+```
+
+**See [APPTAINER_GUIDE.md](APPTAINER_GUIDE.md) for HPC cluster usage, SLURM scripts, and more.**
+
 ### Build Options
 
 Configure build options with `-D<OPTION>=ON/OFF`:
