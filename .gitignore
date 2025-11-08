@@ -26,3 +26,10 @@ dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# Conan
+conan.lock
+conaninfo.txt
+conanbuildinfo.*
+graph_info.json
+CMakeUserPresets.json

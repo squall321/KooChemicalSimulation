@@ -193,6 +193,28 @@ pip install .
 pip install -e .
 ```
 
+### Using Conan Package Manager (Recommended)
+
+[Conan](https://conan.io/) simplifies dependency management and installation:
+
+```bash
+# Install Conan
+pip install conan
+
+# Option 1: Install KooLab (once published to Conan Center)
+conan install koolab/6.0.0-alpha5@ --build=missing
+
+# Option 2: Build from source with Conan
+git clone https://github.com/squall321/KooChemicalSimulation.git
+cd KooChemicalSimulation
+conan create . --build=missing
+
+# With custom options
+conan create . -o with_python=True -o with_gpu=True --build=missing
+```
+
+**See [CONAN_GUIDE.md](CONAN_GUIDE.md) for detailed instructions.**
+
 ### Build Options
 
 Configure build options with `-D<OPTION>=ON/OFF`:
