@@ -73,7 +73,21 @@ if(ENABLE_MPI AND MPI_FOUND)
         CXX_STANDARD_REQUIRED ON
     )
 
-    message(STATUS "MPI examples configured (Priority D1)")
+    # MPI Gray-Scott reaction-diffusion example
+    add_executable(mpi_grayscott_example mpi_grayscott_example.cpp)
+    target_link_libraries(mpi_grayscott_example PRIVATE
+        koo_core
+        koo_utils
+        koo_physics
+        koo_parallel
+        koo_io
+    )
+    set_target_properties(mpi_grayscott_example PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+    )
+
+    message(STATUS "MPI examples configured (Priority D1 - diffusion + reaction-diffusion)")
 endif()
 
 message(STATUS "Examples configured (Phase 48, 70, D1 complete - v6.0.0-alpha5)")
