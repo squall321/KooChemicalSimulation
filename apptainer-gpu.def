@@ -1,0 +1,127 @@
+Bootstrap: docker
+From: nvidia/cuda:11.8.0-devel-ubuntu22.04
+
+%labels
+    Author KooChemicalSimulation Development Team
+    Version 6.0.0-alpha2-gpu
+    Description High-performance chemical simulation framework with CUDA GPU support
+
+%help
+    KooChemicalSimulation v6.0.0-alpha2 (GPU-enabled)
+
+    This container includes CUDA support for GPU-accelerated simulations.
+
+    Usage:
+        # Run with NVIDIA GPU
+        apptainer run --nv koolab-gpu.sif python script.py
+
+        # Interactive shell with GPU
+        apptainer shell --nv koolab-gpu.sif
+
+        # Execute command
+        apptainer exec --nv koolab-gpu.sif python -c "import koolab as koo; print(koo.gpu.device_count())"
+
+        # Multi-GPU
+        apptainer exec --nv koolab-gpu.sif python multi_gpu_script.py
+
+    Check GPU:
+        apptainer exec --nv koolab-gpu.sif nvidia-smi
+
+    For more information:
+        https://github.com/squall321/KooChemicalSimulation
+
+%environment
+    export LC_ALL=C
+    export PATH=/opt/koolab/bin:$PATH
+    export LD_LIBRARY_PATH=/opt/koolab/lib:$LD_LIBRARY_PATH
+    export PYTHONPATH=/opt/koolab/python:$PYTHONPATH
+    export CUDA_HOME=/usr/local/cuda
+    export PATH=$CUDA_HOME/bin:$PATH
+    export LD_LIBRARY_PATH=$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+
+%post
+    # Update and install basic tools
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update -y
+    apt-get install -y \
+        build-essential \
+        cmake \
+        git \
+        wget \
+        ca-certificates \
+        python3 \
+        python3-pip \
+        python3-dev \
+        libeigen3-dev \
+        libopenmpi-dev \
+        openmpi-bin
+
+    # Install Python packages
+    pip3 install --no-cache-dir \
+        numpy \
+        scipy \
+        matplotlib \
+        jupyter \
+        ipywidgets \
+        pybind11 \
+        pytest \
+        cupy-cuda11x
+
+    # Create installation directory
+    mkdir -p /opt/koolab
+
+    # Build KooChemicalSimulation with CUDA
+    cd /tmp
+
+    # For container build, assume source is in /build
+    if [ -d "/build" ]; then
+        cd /build
+        mkdir -p build
+        cd build
+
+        cmake .. \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/opt/koolab \
+            -DENABLE_PYTHON=ON \
+            -DENABLE_GPU=ON \
+            -DCMAKE_CUDA_ARCHITECTURES="60;70;75;80;86" \
+            -DBUILD_TESTING=ON \
+            -DBUILD_EXAMPLES=ON
+
+        make -j$(nproc)
+        make install
+
+        # Run CPU tests (GPU tests need runtime)
+        ctest --output-on-failure -E gpu || true
+    fi
+
+    # Cleanup
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+    rm -rf /tmp/*
+
+%runscript
+    #!/bin/bash
+    echo "KooChemicalSimulation v6.0.0-alpha2 (GPU-enabled)"
+    echo "CUDA Version: $(nvcc --version | grep release | awk '{print $5}' | cut -c2-)"
+    echo ""
+    echo "Usage: apptainer run --nv koolab-gpu.sif python your_script.py"
+    echo "   Or: apptainer shell --nv koolab-gpu.sif"
+    echo ""
+    echo "Checking GPU..."
+    nvidia-smi --query-gpu=index,name,driver_version,memory.total --format=csv,noheader 2>/dev/null || echo "No GPU detected (use --nv flag)"
+    echo ""
+    exec python3 "$@"
+
+%test
+    # Test installation
+    python3 -c "import koolab as koo; print(f'koolab version: {koo.__version__}')"
+
+    # Test GPU detection (may fail if no GPU at build time)
+    python3 -c "import koolab as koo; info = koo.gpu.get_gpu_info(); print(f'GPU runtime: {info[\"runtime\"]}')" || true
+
+    # Run unit tests
+    if [ -d "/opt/koolab/tests" ]; then
+        cd /opt/koolab/tests
+        python3 -m pytest -v -k "not gpu" || true
+    fi

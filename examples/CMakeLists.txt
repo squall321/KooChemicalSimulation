@@ -25,4 +25,100 @@ set_target_properties(surface_example PROPERTIES
     CXX_STANDARD_REQUIRED ON
 )
 
-message(STATUS "Examples configured (Phase 48 complete - v5.0.0)")
+# Full simulation example (Phase 70)
+add_executable(full_simulation_example full_simulation_example.cpp)
+target_link_libraries(full_simulation_example PRIVATE
+    koo_core
+    koo_utils
+    koo_simulation
+)
+
+# Link GPU if available
+if(TARGET koo_gpu)
+    target_link_libraries(full_simulation_example PRIVATE koo_gpu)
+endif()
+
+set_target_properties(full_simulation_example PROPERTIES
+    CXX_STANDARD 17
+    CXX_STANDARD_REQUIRED ON
+)
+
+# MPI examples (Priority D1 - v6.0.0-alpha5)
+if(ENABLE_MPI AND MPI_FOUND)
+    # MPI 1D diffusion example
+    add_executable(mpi_diffusion_1d_example mpi_diffusion_1d_example.cpp)
+    target_link_libraries(mpi_diffusion_1d_example PRIVATE
+        koo_core
+        koo_utils
+        koo_physics
+        koo_parallel
+        koo_io
+    )
+    set_target_properties(mpi_diffusion_1d_example PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+    )
+
+    # MPI 2D diffusion example
+    add_executable(mpi_diffusion_2d_example mpi_diffusion_2d_example.cpp)
+    target_link_libraries(mpi_diffusion_2d_example PRIVATE
+        koo_core
+        koo_utils
+        koo_physics
+        koo_parallel
+        koo_io
+    )
+    set_target_properties(mpi_diffusion_2d_example PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+    )
+
+    # MPI Gray-Scott reaction-diffusion example
+    add_executable(mpi_grayscott_example mpi_grayscott_example.cpp)
+    target_link_libraries(mpi_grayscott_example PRIVATE
+        koo_core
+        koo_utils
+        koo_physics
+        koo_parallel
+        koo_io
+    )
+    set_target_properties(mpi_grayscott_example PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+    )
+
+    # MPI Optimized diffusion example (D1.4)
+    add_executable(mpi_diffusion_optimized_example mpi_diffusion_optimized_example.cpp)
+    target_link_libraries(mpi_diffusion_optimized_example PRIVATE
+        koo_core
+        koo_utils
+        koo_physics
+        koo_parallel
+        koo_io
+    )
+    set_target_properties(mpi_diffusion_optimized_example PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+    )
+
+    message(STATUS "MPI examples configured (Priority D1 - diffusion + reaction-diffusion + optimized)")
+endif()
+
+# PINN C++ example (Priority D2 - v6.0.0-alpha5)
+if(ENABLE_PINN AND Torch_FOUND)
+    add_executable(pinn_cpp_example pinn_cpp_example.cpp)
+    target_link_libraries(pinn_cpp_example PRIVATE
+        koo_core
+        koo_utils
+        koo_parallel
+        "${TORCH_LIBRARIES}"
+    )
+    set_target_properties(pinn_cpp_example PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+    )
+
+    message(STATUS "PINN C++ example configured (Priority D2)")
+endif()
+
+message(STATUS "Examples configured (Phase 48, 70, D1, D2 complete - v6.0.0-alpha5)")

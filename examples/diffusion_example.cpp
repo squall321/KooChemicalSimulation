@@ -43,15 +43,16 @@ int main() {
     std::cout << "  Diffusion coefficient: " << D << " m²/s" << std::endl;
 
     // Initialize concentration (Gaussian pulse)
-    std::vector<double> x(nx);
-    std::vector<double> C(nx);
+    std::vector<double> x(static_cast<size_t>(nx));
+    std::vector<double> C(static_cast<size_t>(nx));
     double x0 = L / 2.0;  // Center
     double sigma = 0.1;   // Width
 
     for (int i = 0; i < nx; ++i) {
-        x[i] = i * dx;
-        double dist = x[i] - x0;
-        C[i] = std::exp(-dist * dist / (2.0 * sigma * sigma));
+        size_t idx = static_cast<size_t>(i);
+        x[idx] = i * dx;
+        double dist = x[idx] - x0;
+        C[idx] = std::exp(-dist * dist / (2.0 * sigma * sigma));
     }
 
     std::cout << "\nInitial condition: Gaussian pulse at x = " << x0 << " m" << std::endl;
@@ -78,7 +79,7 @@ int main() {
     logger.info("Starting diffusion simulation");
 
     // Time loop
-    std::vector<double> C_new(nx);
+    std::vector<double> C_new(static_cast<size_t>(nx));
     std::vector<std::string> vtkFiles;
 
     for (int step = 0; step <= n_steps; ++step) {
@@ -96,17 +97,18 @@ int main() {
 
         // Update (explicit Euler)
         for (int i = 1; i < nx - 1; ++i) {
+            size_t idx = static_cast<size_t>(i);
             // Compute Laplacian (second derivative)
-            double laplacian = (C[i+1] - 2.0 * C[i] + C[i-1]) / (dx * dx);
+            double laplacian = (C[idx+1] - 2.0 * C[idx] + C[idx-1]) / (dx * dx);
 
             // Time step
             double dC_dt = fick.calculateSourceTerm(laplacian, 300.0);
-            C_new[i] = C[i] + dt * dC_dt;
+            C_new[idx] = C[idx] + dt * dC_dt;
         }
 
         // Boundary conditions (zero flux)
         C_new[0] = C_new[1];
-        C_new[nx-1] = C_new[nx-2];
+        C_new[static_cast<size_t>(nx-1)] = C_new[static_cast<size_t>(nx-2)];
 
         // Update
         C = C_new;
@@ -115,7 +117,7 @@ int main() {
     // Write time series PVD
     std::vector<double> outputTimes;
     for (size_t i = 0; i < vtkFiles.size(); ++i) {
-        outputTimes.push_back(i * output_interval * dt);
+        outputTimes.push_back(static_cast<double>(i) * output_interval * dt);
     }
     io::VTKWriter::writeTimeSeries("diffusion_series.pvd", outputTimes, vtkFiles);
 

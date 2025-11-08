@@ -1,5 +1,5 @@
 # Build outputs
-build/
+build*/
 *.o
 *.so
 *.a
@@ -26,3 +26,15 @@ dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# Conan
+conan.lock
+conaninfo.txt
+conanbuildinfo.*
+graph_info.json
+CMakeUserPresets.json
+
+# Apptainer/Singularity
+*.sif
+*.simg
+overlay.img

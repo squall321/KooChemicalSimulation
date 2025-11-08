@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=45", "wheel", "pybind11>=2.6.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "koolab"
+version = "6.0.0-alpha4"
+description = "High-performance chemical simulation framework with GPU acceleration"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {text = "MIT"}
+authors = [
+    {name = "KooChemicalSimulation Development Team"}
+]
+keywords = ["chemistry", "simulation", "kinetics", "pde", "gpu", "cuda", "parallel"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Scientific/Engineering :: Physics",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: C++",
+]
+
+dependencies = [
+    "numpy>=1.18.0",
+]
+
+[project.optional-dependencies]
+viz = ["matplotlib>=3.3.0"]
+jupyter = ["jupyter>=1.0.0", "ipywidgets>=7.6.0"]
+dev = ["pytest>=6.0.0", "pytest-cov>=2.10.0", "black", "flake8"]
+all = ["matplotlib>=3.3.0", "jupyter>=1.0.0", "ipywidgets>=7.6.0", "scipy>=1.5.0"]
+
+[project.urls]
+Homepage = "https://github.com/squall321/KooChemicalSimulation"
+Documentation = "https://github.com/squall321/KooChemicalSimulation"
+Repository = "https://github.com/squall321/KooChemicalSimulation"
+"Bug Tracker" = "https://github.com/squall321/KooChemicalSimulation/issues"
+
+[tool.setuptools]
+packages = ["koolab"]
+
+[tool.setuptools.package-data]
+koolab = ["*.so", "*.pyd"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py37', 'py38', 'py39', 'py310']
+
+[tool.isort]
+profile = "black"
+line_length = 100

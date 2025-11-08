@@ -173,3 +173,39 @@ else()
 endif()
 
 message(STATUS "========================================")
+
+# ============================================
+# Tests (Phase 61-65)
+# ============================================
+
+if(BUILD_TESTING AND GPU_BACKEND STREQUAL "CUDA")
+    message(STATUS "Configuring GPU tests (Phase 61-65)...")
+
+    # Phase 61-65 comprehensive test
+    add_executable(test_phase61_65 tests/test_phase61_65.cpp)
+    target_link_libraries(test_phase61_65 PRIVATE
+        koo_gpu
+        GTest::gtest
+        GTest::gtest_main
+    )
+
+    # Add NVTX support if available
+    find_library(NVTX_LIBRARY nvToolsExt PATHS ${CUDAToolkit_LIBRARY_DIR})
+    if(NVTX_LIBRARY)
+        target_link_libraries(test_phase61_65 PRIVATE ${NVTX_LIBRARY})
+        message(STATUS "  NVTX library found: ${NVTX_LIBRARY}")
+    else()
+        message(STATUS "  NVTX library not found (markers will be no-ops)")
+    endif()
+
+    # Set CUDA properties
+    set_target_properties(test_phase61_65 PROPERTIES
+        CUDA_SEPARABLE_COMPILATION ON
+        CUDA_RESOLVE_DEVICE_SYMBOLS ON
+    )
+
+    add_test(NAME GPUPhase61_65 COMMAND test_phase61_65)
+
+    message(STATUS "  Test executable: test_phase61_65")
+    message(STATUS "  Tests for Phase 61-65 configured")
+endif()

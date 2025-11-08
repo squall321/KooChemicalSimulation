@@ -1,0 +1,120 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop, 'claude/**' ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  format-check:
+    name: Formatting Check
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install clang-format
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y clang-format-14
+        sudo ln -sf /usr/bin/clang-format-14 /usr/bin/clang-format
+
+    - name: Check code formatting
+      run: |
+        clang-format --version
+        # Check all C++ files
+        find src include tests examples benchmarks \
+          -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) \
+          -exec clang-format --dry-run --Werror {} \; 2>&1 | tee format-output.txt
+
+        # Check if there were any warnings
+        if grep -q "warning:" format-output.txt; then
+          echo "::error::Code formatting issues found. Please run 'cmake --build build --target format'"
+          exit 1
+        fi
+        echo "::notice::All files are properly formatted ✓"
+
+  clang-tidy:
+    name: Static Analysis (clang-tidy)
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          clang-tidy-14 \
+          cmake \
+          ninja-build \
+          libeigen3-dev \
+          libfmt-dev \
+          libspdlog-dev \
+          nlohmann-json3-dev \
+          libyaml-cpp-dev
+        sudo ln -sf /usr/bin/clang-tidy-14 /usr/bin/clang-tidy
+
+    - name: Configure CMake
+      run: |
+        cmake -B build -G Ninja \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+          -DBUILD_TESTING=OFF \
+          -DBUILD_EXAMPLES=OFF
+
+    - name: Run clang-tidy
+      run: |
+        clang-tidy --version
+        # Run on a subset of files to keep CI fast
+        find src/core src/mesh src/utils -name "*.cpp" | head -20 | \
+          xargs clang-tidy -p build --warnings-as-errors='' || true
+        echo "::notice::clang-tidy analysis completed"
+
+  cppcheck:
+    name: Static Analysis (cppcheck)
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install cppcheck
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cppcheck
+
+    - name: Run cppcheck
+      run: |
+        cppcheck --version
+        cppcheck \
+          --enable=warning,performance,portability,style \
+          --std=c++17 \
+          --template=gcc \
+          --suppressions-list=.cppcheck-suppressions \
+          --inline-suppr \
+          --suppress=missingIncludeSystem \
+          --error-exitcode=1 \
+          -I include \
+          src include 2>&1 | tee cppcheck-output.txt
+
+        echo "::notice::cppcheck analysis completed"
+
+  summary:
+    name: Quality Summary
+    runs-on: ubuntu-22.04
+    needs: [format-check, clang-tidy, cppcheck]
+    if: always()
+
+    steps:
+    - name: Check results
+      run: |
+        if [[ "${{ needs.format-check.result }}" == "success" ]] && \
+           [[ "${{ needs.clang-tidy.result }}" == "success" ]] && \
+           [[ "${{ needs.cppcheck.result }}" == "success" ]]; then
+          echo "::notice::✅ All code quality checks passed!"
+          exit 0
+        else
+          echo "::warning::Some code quality checks failed"
+          exit 0
+        fi

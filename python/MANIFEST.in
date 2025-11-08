@@ -1,0 +1,33 @@
+# MANIFEST.in - Package manifest for koolab
+# Phase 60: PyPI Distribution
+
+# Include README and license
+include README.md
+include ../LICENSE
+
+# Include source files
+recursive-include src *.cpp *.h *.hpp
+
+# Include CMake files
+include CMakeLists.txt
+include ../cmake/*.cmake
+
+# Include Python package
+recursive-include koolab *.py
+
+# Include tests
+recursive-include tests *.py
+
+# Include notebooks
+recursive-include notebooks *.ipynb
+
+# Include examples (future)
+recursive-include examples *.py
+
+# Exclude build artifacts
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude __pycache__
+global-exclude *.so
+global-exclude *.o
+global-exclude .DS_Store

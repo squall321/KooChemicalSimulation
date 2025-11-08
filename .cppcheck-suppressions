@@ -1,0 +1,16 @@
+# cppcheck suppressions for KooChemicalSimulation
+# Format: [error id]:[filename]:[line]
+
+# Suppress missing include warnings (external libraries)
+missingIncludeSystem
+
+# Suppress warnings from external dependencies
+*:*/external/*
+*:*/third_party/*
+
+# Suppress specific false positives
+# Example:
+# uninitMemberVar:src/mesh/MeshData.cpp:42
+
+# Suppress style warnings for test files (can be more relaxed)
+unusedFunction:tests/*

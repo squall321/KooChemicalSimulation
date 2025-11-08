@@ -485,7 +485,7 @@ public:
      * @return Parser instance
      * @throws ParserException if format not supported
      */
-    static std::unique_ptr<IConfigParser> create(ConfigFormat format) {
+    static std::unique_ptr<IConfigParser> create([[maybe_unused]] ConfigFormat format) {
 #ifdef USE_JSON
         if (format == ConfigFormat::JSON) {
             return std::make_unique<JsonParser>();

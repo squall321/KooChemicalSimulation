@@ -32,19 +32,19 @@ void testVector3D() {
     Vector3D v2(4.0, 5.0, 6.0);
 
     // Test addition
-    Vector3D v3 = v1 + v2;
+    [[maybe_unused]] Vector3D v3 = v1 + v2;
     assert(std::abs(v3[0] - 5.0) < 1e-10);
     assert(std::abs(v3[1] - 7.0) < 1e-10);
     assert(std::abs(v3[2] - 9.0) < 1e-10);
 
     // Test scalar multiplication
-    Vector3D v4 = v1 * 2.0;
+    [[maybe_unused]] Vector3D v4 = v1 * 2.0;
     assert(std::abs(v4[0] - 2.0) < 1e-10);
     assert(std::abs(v4[1] - 4.0) < 1e-10);
     assert(std::abs(v4[2] - 6.0) < 1e-10);
 
     // Test dot product
-    double dot = v1.dot(v2);
+    [[maybe_unused]] double dot = v1.dot(v2);
     assert(std::abs(dot - 32.0) < 1e-10);  // 1*4 + 2*5 + 3*6 = 32
 
     // Test norm
@@ -131,7 +131,7 @@ void testPhysicalQuantity() {
 void testPhysicalQuantityErrors() {
     std::cout << "Testing PhysicalQuantity error handling..." << std::endl;
 
-    bool exceptionCaught = false;
+    [[maybe_unused]] bool exceptionCaught = false;
 
     try {
         auto length = Units::Meter(5.0);
@@ -194,7 +194,7 @@ void testAssertMacros() {
     KOO_ASSERT(true, "This should not throw");
 
     // Test KOO_ASSERT (should throw)
-    bool caught = false;
+    [[maybe_unused]] bool caught = false;
     try {
         KOO_ASSERT(false, "This should throw");
     } catch (const LogicException&) {

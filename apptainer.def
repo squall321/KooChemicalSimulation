@@ -1,0 +1,123 @@
+Bootstrap: docker
+From: ubuntu:22.04
+
+%labels
+    Author KooChemicalSimulation Development Team
+    Version 6.0.0-alpha2
+    Description High-performance chemical simulation framework with GPU support
+
+%help
+    KooChemicalSimulation v6.0.0-alpha2
+
+    A high-performance chemical simulation framework with:
+    - Chemical kinetics and reaction networks
+    - PDE solvers for diffusion and transport
+    - Surface chemistry and catalysis
+    - GPU acceleration (CUDA/HIP)
+    - MPI + OpenMP parallelization
+    - Python API
+
+    Usage:
+        apptainer run koolab.sif python script.py
+        apptainer shell koolab.sif
+        apptainer exec koolab.sif koolab-simulation --help
+
+    With GPU:
+        apptainer run --nv koolab.sif python gpu_script.py
+
+    For more information:
+        https://github.com/squall321/KooChemicalSimulation
+
+%environment
+    export LC_ALL=C
+    export PATH=/opt/koolab/bin:$PATH
+    export LD_LIBRARY_PATH=/opt/koolab/lib:$LD_LIBRARY_PATH
+    export PYTHONPATH=/opt/koolab/python:$PYTHONPATH
+
+%post
+    # Update and install basic tools
+    apt-get update -y
+    apt-get install -y \
+        build-essential \
+        cmake \
+        git \
+        wget \
+        ca-certificates \
+        python3 \
+        python3-pip \
+        python3-dev \
+        libeigen3-dev \
+        libopenmpi-dev \
+        openmpi-bin
+
+    # Install Python packages
+    pip3 install --no-cache-dir \
+        numpy \
+        scipy \
+        matplotlib \
+        jupyter \
+        ipywidgets \
+        pybind11 \
+        pytest
+
+    # Create installation directory
+    mkdir -p /opt/koolab
+
+    # Build KooChemicalSimulation
+    # Note: In actual use, you would copy source or clone repo
+    cd /tmp
+
+    # For container build, assume source is in /build
+    if [ -d "/build" ]; then
+        cd /build
+        mkdir -p build
+        cd build
+
+        cmake .. \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/opt/koolab \
+            -DENABLE_PYTHON=ON \
+            -DENABLE_GPU=OFF \
+            -DBUILD_TESTING=ON \
+            -DBUILD_EXAMPLES=ON
+
+        make -j$(nproc)
+        make install
+
+        # Run tests
+        ctest --output-on-failure || true
+    fi
+
+    # Cleanup
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+    rm -rf /tmp/*
+
+%runscript
+    #!/bin/bash
+    # Default: launch Python with koolab
+    echo "KooChemicalSimulation v6.0.0-alpha2"
+    echo "Usage: apptainer run koolab.sif python your_script.py"
+    echo "   Or: apptainer shell koolab.sif"
+    exec python3 "$@"
+
+%test
+    # Test installation
+    python3 -c "import koolab as koo; print(f'koolab version: {koo.__version__}'); koo.print_info()"
+
+    # Run unit tests
+    if [ -d "/opt/koolab/tests" ]; then
+        cd /opt/koolab/tests
+        python3 -m pytest -v || true
+    fi
+
+%files
+    # Copy source code into container at build time
+    # This section is used when building with: apptainer build koolab.sif apptainer.def
+    # Uncomment and adjust paths as needed:
+    # ../core /build/core
+    # ../mesh /build/mesh
+    # ../chemistry /build/chemistry
+    # ../gpu /build/gpu
+    # ../python /build/python
+    # ../CMakeLists.txt /build/CMakeLists.txt

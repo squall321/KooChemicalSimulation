@@ -80,6 +80,28 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     endif()
 endif()
 
+# Coverage flags
+if(ENABLE_COVERAGE)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        message(STATUS "Enabling code coverage")
+        add_compile_options(--coverage -O0 -g)
+        add_link_options(--coverage)
+    else()
+        message(WARNING "Code coverage only supported on GCC and Clang")
+    endif()
+endif()
+
+# Sanitizer flags
+if(ENABLE_SANITIZERS)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        message(STATUS "Enabling sanitizers (address, undefined)")
+        add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer)
+        add_link_options(-fsanitize=address,undefined)
+    else()
+        message(WARNING "Sanitizers only supported on GCC and Clang")
+    endif()
+endif()
+
 # ============================================================================
 # Dependencies
 # ============================================================================
@@ -226,9 +248,16 @@ add_subdirectory(config)
 add_subdirectory(parallel)
 add_subdirectory(gpu)
 add_subdirectory(utils)
+add_subdirectory(simulation)
 
 # Applications
 add_subdirectory(apps)
+
+# Python bindings (Phase 56)
+option(ENABLE_PYTHON "Build Python bindings" ON)
+if(ENABLE_PYTHON)
+    add_subdirectory(python)
+endif()
 
 # Tests (if enabled)
 if(BUILD_TESTING)
@@ -238,6 +267,12 @@ endif()
 # Examples (if enabled)
 if(BUILD_EXAMPLES)
     add_subdirectory(examples)
+endif()
+
+# Benchmarks (Phase 70)
+option(BUILD_BENCHMARKS "Build benchmark suite" ON)
+if(BUILD_BENCHMARKS)
+    add_subdirectory(benchmarks)
 endif()
 
 # Documentation (if enabled)
@@ -286,6 +321,187 @@ endif()
 # )
 
 message(STATUS "Installation rules will be added in Phase 2+")
+
+# ============================================================================
+# Code Quality Tools
+# ============================================================================
+
+# clang-format target
+find_program(CLANG_FORMAT_EXECUTABLE NAMES clang-format)
+if(CLANG_FORMAT_EXECUTABLE)
+    # Collect all source files
+    file(GLOB_RECURSE ALL_SOURCE_FILES
+        ${CMAKE_SOURCE_DIR}/src/*.cpp
+        ${CMAKE_SOURCE_DIR}/src/*.h
+        ${CMAKE_SOURCE_DIR}/include/*.h
+        ${CMAKE_SOURCE_DIR}/include/*.hpp
+        ${CMAKE_SOURCE_DIR}/tests/*.cpp
+        ${CMAKE_SOURCE_DIR}/tests/*.h
+        ${CMAKE_SOURCE_DIR}/examples/*.cpp
+        ${CMAKE_SOURCE_DIR}/benchmarks/*.cpp
+    )
+
+    # Filter out build directory
+    list(FILTER ALL_SOURCE_FILES EXCLUDE REGEX "${CMAKE_BINARY_DIR}/.*")
+
+    add_custom_target(format
+        COMMAND ${CLANG_FORMAT_EXECUTABLE} -i ${ALL_SOURCE_FILES}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Running clang-format on all source files..."
+        VERBATIM
+    )
+
+    add_custom_target(format-check
+        COMMAND ${CLANG_FORMAT_EXECUTABLE} --dry-run --Werror ${ALL_SOURCE_FILES}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Checking code formatting..."
+        VERBATIM
+    )
+
+    message(STATUS "clang-format found: ${CLANG_FORMAT_EXECUTABLE}")
+    message(STATUS "  Targets available: 'format' and 'format-check'")
+else()
+    message(STATUS "clang-format not found - formatting targets disabled")
+endif()
+
+# clang-tidy target
+find_program(CLANG_TIDY_EXECUTABLE NAMES clang-tidy)
+if(CLANG_TIDY_EXECUTABLE)
+    add_custom_target(tidy
+        COMMAND ${CLANG_TIDY_EXECUTABLE}
+            -p ${CMAKE_BINARY_DIR}
+            ${ALL_SOURCE_FILES}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Running clang-tidy on all source files..."
+        VERBATIM
+    )
+
+    message(STATUS "clang-tidy found: ${CLANG_TIDY_EXECUTABLE}")
+    message(STATUS "  Target available: 'tidy'")
+
+    # Option to enable clang-tidy during build
+    option(ENABLE_CLANG_TIDY "Enable clang-tidy during compilation" OFF)
+    if(ENABLE_CLANG_TIDY)
+        set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_EXECUTABLE})
+        message(STATUS "clang-tidy enabled during compilation")
+    endif()
+else()
+    message(STATUS "clang-tidy not found - tidy target disabled")
+endif()
+
+# cppcheck target
+find_program(CPPCHECK_EXECUTABLE NAMES cppcheck)
+if(CPPCHECK_EXECUTABLE)
+    add_custom_target(cppcheck
+        COMMAND ${CPPCHECK_EXECUTABLE}
+            --enable=warning,performance,portability,style
+            --std=c++17
+            --template=gcc
+            --quiet
+            --inline-suppr
+            --suppress=missingIncludeSystem
+            -I ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_SOURCE_DIR}/src
+            ${CMAKE_SOURCE_DIR}/include
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Running cppcheck static analysis..."
+        VERBATIM
+    )
+
+    message(STATUS "cppcheck found: ${CPPCHECK_EXECUTABLE}")
+    message(STATUS "  Target available: 'cppcheck'")
+else()
+    message(STATUS "cppcheck not found - cppcheck target disabled")
+endif()
+
+# Combined quality check target
+add_custom_target(quality-check
+    COMMENT "Running all code quality checks..."
+)
+
+if(CLANG_FORMAT_EXECUTABLE)
+    add_dependencies(quality-check format-check)
+endif()
+
+if(CLANG_TIDY_EXECUTABLE)
+    add_dependencies(quality-check tidy)
+endif()
+
+if(CPPCHECK_EXECUTABLE)
+    add_dependencies(quality-check cppcheck)
+endif()
+
+# ============================================================================
+# Code Coverage
+# ============================================================================
+
+if(ENABLE_COVERAGE)
+    # Find lcov and genhtml
+    find_program(LCOV_EXECUTABLE NAMES lcov)
+    find_program(GENHTML_EXECUTABLE NAMES genhtml)
+
+    if(LCOV_EXECUTABLE AND GENHTML_EXECUTABLE)
+        # Coverage data directory
+        set(COVERAGE_OUTPUT_DIR ${CMAKE_BINARY_DIR}/coverage)
+        set(COVERAGE_INFO_FILE ${COVERAGE_OUTPUT_DIR}/coverage.info)
+        set(COVERAGE_CLEANED_FILE ${COVERAGE_OUTPUT_DIR}/coverage_cleaned.info)
+        set(COVERAGE_HTML_DIR ${COVERAGE_OUTPUT_DIR}/html)
+
+        # Target to generate initial coverage data
+        add_custom_target(coverage-init
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${COVERAGE_OUTPUT_DIR}
+            COMMAND ${LCOV_EXECUTABLE} --zerocounters --directory ${CMAKE_BINARY_DIR}
+            COMMAND ${LCOV_EXECUTABLE} --capture --initial --directory ${CMAKE_BINARY_DIR} --output-file ${COVERAGE_INFO_FILE}
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Initializing code coverage counters..."
+            VERBATIM
+        )
+
+        # Target to capture coverage data after tests
+        add_custom_target(coverage-capture
+            COMMAND ${LCOV_EXECUTABLE} --capture --directory ${CMAKE_BINARY_DIR} --output-file ${COVERAGE_INFO_FILE}
+            COMMAND ${LCOV_EXECUTABLE} --remove ${COVERAGE_INFO_FILE}
+                '/usr/*'
+                '*/external/*'
+                '*/third_party/*'
+                '*/tests/*'
+                '*/examples/*'
+                '*/benchmarks/*'
+                --output-file ${COVERAGE_CLEANED_FILE}
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Capturing code coverage data..."
+            VERBATIM
+        )
+
+        # Target to generate HTML report
+        add_custom_target(coverage-html
+            COMMAND ${GENHTML_EXECUTABLE} ${COVERAGE_CLEANED_FILE} --output-directory ${COVERAGE_HTML_DIR}
+            COMMAND ${CMAKE_COMMAND} -E echo "Coverage report: ${COVERAGE_HTML_DIR}/index.html"
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Generating HTML coverage report..."
+            VERBATIM
+        )
+
+        # Combined coverage target
+        add_custom_target(coverage
+            COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target coverage-init
+            COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target test
+            COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target coverage-capture
+            COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target coverage-html
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Running complete coverage analysis..."
+            VERBATIM
+        )
+
+        message(STATUS "lcov found: ${LCOV_EXECUTABLE}")
+        message(STATUS "genhtml found: ${GENHTML_EXECUTABLE}")
+        message(STATUS "  Targets available: 'coverage', 'coverage-init', 'coverage-capture', 'coverage-html'")
+        message(STATUS "  Coverage report will be in: ${COVERAGE_HTML_DIR}/index.html")
+    else()
+        message(STATUS "lcov/genhtml not found - coverage targets disabled")
+        message(STATUS "  Install with: sudo apt-get install lcov")
+    endif()
+endif()
 
 # ============================================================================
 # Summary

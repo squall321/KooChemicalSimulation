@@ -94,7 +94,7 @@ void testMemoryManagerBasics() {
     void* ptr1 = memMgr.allocate(1024, __FILE__, __LINE__, __FUNCTION__);
     assert(ptr1 != nullptr && "Allocation should succeed");
 
-    auto stats1 = memMgr.getStats();
+    [[maybe_unused]] auto stats1 = memMgr.getStats();
     assert(stats1.allocationCount == 1 && "Should have 1 allocation");
     assert(stats1.totalAllocated == 1024 && "Should have allocated 1024 bytes");
     assert(stats1.currentUsage == 1024 && "Current usage should be 1024 bytes");
@@ -103,7 +103,7 @@ void testMemoryManagerBasics() {
     // Test deallocation
     memMgr.deallocate(ptr1);
 
-    auto stats2 = memMgr.getStats();
+    [[maybe_unused]] auto stats2 = memMgr.getStats();
     assert(stats2.freeCount == 1 && "Should have 1 deallocation");
     assert(stats2.totalFreed == 1024 && "Should have freed 1024 bytes");
     assert(stats2.currentUsage == 0 && "Current usage should be 0");
@@ -132,7 +132,7 @@ void testMemoryLeakDetection() {
     void* leak1 = memMgr.allocate(512, __FILE__, __LINE__, __FUNCTION__);
     void* leak2 = memMgr.allocate(256, __FILE__, __LINE__, __FUNCTION__);
 
-    auto stats = memMgr.getStats();
+    [[maybe_unused]] auto stats = memMgr.getStats();
     assert(stats.hasLeaks() && "Should detect leaks");
     assert(stats.leakAmount() == 768 && "Should report 768 bytes leaked");
     assert(stats.activeAllocations == 2 && "Should have 2 active allocations");
@@ -170,26 +170,26 @@ void testMemoryManagerMacros() {
     void* ptr = KOO_ALLOCATE(2048);
     assert(ptr != nullptr && "KOO_ALLOCATE should work");
 
-    auto stats1 = memMgr.getStats();
+    [[maybe_unused]] auto stats1 = memMgr.getStats();
     assert(stats1.totalAllocated == 2048 && "Should have allocated 2048 bytes");
 
     // Test KOO_DEALLOCATE macro
     KOO_DEALLOCATE(ptr);
 
-    auto stats2 = memMgr.getStats();
+    [[maybe_unused]] auto stats2 = memMgr.getStats();
     assert(stats2.totalFreed == 2048 && "Should have freed 2048 bytes");
 
     // Test KOO_NEW_ARRAY macro
     int* arr = KOO_NEW_ARRAY(int, 100);
     assert(arr != nullptr && "KOO_NEW_ARRAY should work");
 
-    auto stats3 = memMgr.getStats();
+    [[maybe_unused]] auto stats3 = memMgr.getStats();
     assert(stats3.totalAllocated == 2048 + sizeof(int) * 100 && "Array allocation tracked");
 
     // Test KOO_DELETE_ARRAY macro
     KOO_DELETE_ARRAY(arr);
 
-    auto stats4 = memMgr.getStats();
+    [[maybe_unused]] auto stats4 = memMgr.getStats();
     assert(!stats4.hasLeaks() && "Should have no leaks");
 
     std::cout << "✓ KOO_ALLOCATE/DEALLOCATE macros work\n";
@@ -310,7 +310,7 @@ void testObjectPoolMaxCapacity() {
     assert(pool.created() == 3 && "Should have created 3 objects");
 
     // Try to acquire beyond max capacity - should throw
-    bool exceptionThrown = false;
+    [[maybe_unused]] bool exceptionThrown = false;
     try {
         TestObject* obj4 = pool.acquire();
         (void)obj4; // Suppress unused variable warning
@@ -395,12 +395,12 @@ void testUniquePtr() {
         assert(ptr->getValue() == 42 && "Should initialize with value");
         assert(ptr->getName() == "unique" && "Should initialize with name");
 
-        auto stats1 = memMgr.getStats();
+        [[maybe_unused]] auto stats1 = memMgr.getStats();
         assert(stats1.activeAllocations == 1 && "Should track allocation");
 
     } // ptr destroyed here
 
-    auto stats2 = memMgr.getStats();
+    [[maybe_unused]] auto stats2 = memMgr.getStats();
     assert(stats2.activeAllocations == 0 && "Should deallocate on destruction");
     assert(!stats2.hasLeaks() && "Should have no leaks");
 
@@ -436,7 +436,7 @@ void testSharedPtr() {
             assert(ptr1.use_count() == 2 && "Should have 2 references");
             assert(ptr2->getValue() == 100 && "Both pointers should access same object");
 
-            auto stats = memMgr.getStats();
+            [[maybe_unused]] auto stats = memMgr.getStats();
             assert(stats.activeAllocations == 1 && "Should track only 1 allocation");
 
         } // ptr2 destroyed
@@ -445,7 +445,7 @@ void testSharedPtr() {
 
     } // ptr1 destroyed, object should be deleted
 
-    auto stats = memMgr.getStats();
+    [[maybe_unused]] auto stats = memMgr.getStats();
     assert(stats.activeAllocations == 0 && "Should deallocate when last ref gone");
     assert(!stats.hasLeaks() && "Should have no leaks");
 
@@ -608,7 +608,7 @@ void testUniqueArrayPtr() {
         assert(arr[9].getValue() == 9 && "Element 9 should have value 9");
 
         // Check memory tracking
-        auto stats = memMgr.getStats();
+        [[maybe_unused]] auto stats = memMgr.getStats();
         assert(stats.activeAllocations == 1 && "Should track 1 array allocation");
 
     } // arr destroyed
@@ -616,7 +616,7 @@ void testUniqueArrayPtr() {
     // Check all destructors called
     assert(TestObject::getDestructorCalls() == 10 && "Should destruct 10 objects");
 
-    auto stats = memMgr.getStats();
+    [[maybe_unused]] auto stats = memMgr.getStats();
     assert(stats.activeAllocations == 0 && "Should deallocate array");
     assert(!stats.hasLeaks() && "Should have no leaks");
 
