@@ -3,6 +3,8 @@
 ![CI](https://github.com/squall321/KooChemicalSimulation/actions/workflows/ci.yml/badge.svg)
 ![Quick Test](https://github.com/squall321/KooChemicalSimulation/actions/workflows/quick-test.yml/badge.svg)
 ![Code Quality](https://github.com/squall321/KooChemicalSimulation/actions/workflows/code-quality.yml/badge.svg)
+![Coverage](https://github.com/squall321/KooChemicalSimulation/actions/workflows/coverage.yml/badge.svg)
+[![codecov](https://codecov.io/gh/squall321/KooChemicalSimulation/branch/main/graph/badge.svg)](https://codecov.io/gh/squall321/KooChemicalSimulation)
 
 **Version**: 6.0.0-alpha5 🎉
 **Status**: Production Ready (100% Complete - All 70 Phases + Full Documentation)

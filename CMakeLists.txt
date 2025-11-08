@@ -80,6 +80,28 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     endif()
 endif()
 
+# Coverage flags
+if(ENABLE_COVERAGE)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        message(STATUS "Enabling code coverage")
+        add_compile_options(--coverage -O0 -g)
+        add_link_options(--coverage)
+    else()
+        message(WARNING "Code coverage only supported on GCC and Clang")
+    endif()
+endif()
+
+# Sanitizer flags
+if(ENABLE_SANITIZERS)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        message(STATUS "Enabling sanitizers (address, undefined)")
+        add_compile_options(-fsanitize=address,undefined -fno-omit-frame-pointer)
+        add_link_options(-fsanitize=address,undefined)
+    else()
+        message(WARNING "Sanitizers only supported on GCC and Clang")
+    endif()
+endif()
+
 # ============================================================================
 # Dependencies
 # ============================================================================
@@ -407,6 +429,78 @@ endif()
 
 if(CPPCHECK_EXECUTABLE)
     add_dependencies(quality-check cppcheck)
+endif()
+
+# ============================================================================
+# Code Coverage
+# ============================================================================
+
+if(ENABLE_COVERAGE)
+    # Find lcov and genhtml
+    find_program(LCOV_EXECUTABLE NAMES lcov)
+    find_program(GENHTML_EXECUTABLE NAMES genhtml)
+
+    if(LCOV_EXECUTABLE AND GENHTML_EXECUTABLE)
+        # Coverage data directory
+        set(COVERAGE_OUTPUT_DIR ${CMAKE_BINARY_DIR}/coverage)
+        set(COVERAGE_INFO_FILE ${COVERAGE_OUTPUT_DIR}/coverage.info)
+        set(COVERAGE_CLEANED_FILE ${COVERAGE_OUTPUT_DIR}/coverage_cleaned.info)
+        set(COVERAGE_HTML_DIR ${COVERAGE_OUTPUT_DIR}/html)
+
+        # Target to generate initial coverage data
+        add_custom_target(coverage-init
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${COVERAGE_OUTPUT_DIR}
+            COMMAND ${LCOV_EXECUTABLE} --zerocounters --directory ${CMAKE_BINARY_DIR}
+            COMMAND ${LCOV_EXECUTABLE} --capture --initial --directory ${CMAKE_BINARY_DIR} --output-file ${COVERAGE_INFO_FILE}
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Initializing code coverage counters..."
+            VERBATIM
+        )
+
+        # Target to capture coverage data after tests
+        add_custom_target(coverage-capture
+            COMMAND ${LCOV_EXECUTABLE} --capture --directory ${CMAKE_BINARY_DIR} --output-file ${COVERAGE_INFO_FILE}
+            COMMAND ${LCOV_EXECUTABLE} --remove ${COVERAGE_INFO_FILE}
+                '/usr/*'
+                '*/external/*'
+                '*/third_party/*'
+                '*/tests/*'
+                '*/examples/*'
+                '*/benchmarks/*'
+                --output-file ${COVERAGE_CLEANED_FILE}
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Capturing code coverage data..."
+            VERBATIM
+        )
+
+        # Target to generate HTML report
+        add_custom_target(coverage-html
+            COMMAND ${GENHTML_EXECUTABLE} ${COVERAGE_CLEANED_FILE} --output-directory ${COVERAGE_HTML_DIR}
+            COMMAND ${CMAKE_COMMAND} -E echo "Coverage report: ${COVERAGE_HTML_DIR}/index.html"
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Generating HTML coverage report..."
+            VERBATIM
+        )
+
+        # Combined coverage target
+        add_custom_target(coverage
+            COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target coverage-init
+            COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target test
+            COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target coverage-capture
+            COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target coverage-html
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Running complete coverage analysis..."
+            VERBATIM
+        )
+
+        message(STATUS "lcov found: ${LCOV_EXECUTABLE}")
+        message(STATUS "genhtml found: ${GENHTML_EXECUTABLE}")
+        message(STATUS "  Targets available: 'coverage', 'coverage-init', 'coverage-capture', 'coverage-html'")
+        message(STATUS "  Coverage report will be in: ${COVERAGE_HTML_DIR}/index.html")
+    else()
+        message(STATUS "lcov/genhtml not found - coverage targets disabled")
+        message(STATUS "  Install with: sudo apt-get install lcov")
+    endif()
 endif()
 
 # ============================================================================
