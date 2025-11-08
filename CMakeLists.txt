@@ -301,6 +301,115 @@ endif()
 message(STATUS "Installation rules will be added in Phase 2+")
 
 # ============================================================================
+# Code Quality Tools
+# ============================================================================
+
+# clang-format target
+find_program(CLANG_FORMAT_EXECUTABLE NAMES clang-format)
+if(CLANG_FORMAT_EXECUTABLE)
+    # Collect all source files
+    file(GLOB_RECURSE ALL_SOURCE_FILES
+        ${CMAKE_SOURCE_DIR}/src/*.cpp
+        ${CMAKE_SOURCE_DIR}/src/*.h
+        ${CMAKE_SOURCE_DIR}/include/*.h
+        ${CMAKE_SOURCE_DIR}/include/*.hpp
+        ${CMAKE_SOURCE_DIR}/tests/*.cpp
+        ${CMAKE_SOURCE_DIR}/tests/*.h
+        ${CMAKE_SOURCE_DIR}/examples/*.cpp
+        ${CMAKE_SOURCE_DIR}/benchmarks/*.cpp
+    )
+
+    # Filter out build directory
+    list(FILTER ALL_SOURCE_FILES EXCLUDE REGEX "${CMAKE_BINARY_DIR}/.*")
+
+    add_custom_target(format
+        COMMAND ${CLANG_FORMAT_EXECUTABLE} -i ${ALL_SOURCE_FILES}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Running clang-format on all source files..."
+        VERBATIM
+    )
+
+    add_custom_target(format-check
+        COMMAND ${CLANG_FORMAT_EXECUTABLE} --dry-run --Werror ${ALL_SOURCE_FILES}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Checking code formatting..."
+        VERBATIM
+    )
+
+    message(STATUS "clang-format found: ${CLANG_FORMAT_EXECUTABLE}")
+    message(STATUS "  Targets available: 'format' and 'format-check'")
+else()
+    message(STATUS "clang-format not found - formatting targets disabled")
+endif()
+
+# clang-tidy target
+find_program(CLANG_TIDY_EXECUTABLE NAMES clang-tidy)
+if(CLANG_TIDY_EXECUTABLE)
+    add_custom_target(tidy
+        COMMAND ${CLANG_TIDY_EXECUTABLE}
+            -p ${CMAKE_BINARY_DIR}
+            ${ALL_SOURCE_FILES}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Running clang-tidy on all source files..."
+        VERBATIM
+    )
+
+    message(STATUS "clang-tidy found: ${CLANG_TIDY_EXECUTABLE}")
+    message(STATUS "  Target available: 'tidy'")
+
+    # Option to enable clang-tidy during build
+    option(ENABLE_CLANG_TIDY "Enable clang-tidy during compilation" OFF)
+    if(ENABLE_CLANG_TIDY)
+        set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_EXECUTABLE})
+        message(STATUS "clang-tidy enabled during compilation")
+    endif()
+else()
+    message(STATUS "clang-tidy not found - tidy target disabled")
+endif()
+
+# cppcheck target
+find_program(CPPCHECK_EXECUTABLE NAMES cppcheck)
+if(CPPCHECK_EXECUTABLE)
+    add_custom_target(cppcheck
+        COMMAND ${CPPCHECK_EXECUTABLE}
+            --enable=warning,performance,portability,style
+            --std=c++17
+            --template=gcc
+            --quiet
+            --inline-suppr
+            --suppress=missingIncludeSystem
+            -I ${CMAKE_SOURCE_DIR}/include
+            ${CMAKE_SOURCE_DIR}/src
+            ${CMAKE_SOURCE_DIR}/include
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Running cppcheck static analysis..."
+        VERBATIM
+    )
+
+    message(STATUS "cppcheck found: ${CPPCHECK_EXECUTABLE}")
+    message(STATUS "  Target available: 'cppcheck'")
+else()
+    message(STATUS "cppcheck not found - cppcheck target disabled")
+endif()
+
+# Combined quality check target
+add_custom_target(quality-check
+    COMMENT "Running all code quality checks..."
+)
+
+if(CLANG_FORMAT_EXECUTABLE)
+    add_dependencies(quality-check format-check)
+endif()
+
+if(CLANG_TIDY_EXECUTABLE)
+    add_dependencies(quality-check tidy)
+endif()
+
+if(CPPCHECK_EXECUTABLE)
+    add_dependencies(quality-check cppcheck)
+endif()
+
+# ============================================================================
 # Summary
 # ============================================================================
 
