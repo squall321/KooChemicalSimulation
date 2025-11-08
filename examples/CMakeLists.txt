@@ -104,4 +104,21 @@ if(ENABLE_MPI AND MPI_FOUND)
     message(STATUS "MPI examples configured (Priority D1 - diffusion + reaction-diffusion + optimized)")
 endif()
 
-message(STATUS "Examples configured (Phase 48, 70, D1 complete - v6.0.0-alpha5)")
+# PINN C++ example (Priority D2 - v6.0.0-alpha5)
+if(ENABLE_PINN AND Torch_FOUND)
+    add_executable(pinn_cpp_example pinn_cpp_example.cpp)
+    target_link_libraries(pinn_cpp_example PRIVATE
+        koo_core
+        koo_utils
+        koo_parallel
+        "${TORCH_LIBRARIES}"
+    )
+    set_target_properties(pinn_cpp_example PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+    )
+
+    message(STATUS "PINN C++ example configured (Priority D2)")
+endif()
+
+message(STATUS "Examples configured (Phase 48, 70, D1, D2 complete - v6.0.0-alpha5)")
