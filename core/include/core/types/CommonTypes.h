@@ -17,6 +17,8 @@
 #include <array>
 #include <cstddef>
 #include <cmath>
+#include <stdexcept>
+#include <string>
 
 // Note: Eigen3 is optional in Phase 1-2, but becomes required from Phase 3+
 // If Eigen3 is not available, simple fallback implementations are provided
@@ -180,6 +182,9 @@ public:
      * @brief Scalar division
      */
     Vector3D operator/(double scalar) const {
+        if (std::abs(scalar) < 1e-15) {
+            throw std::runtime_error("Vector3D: Division by zero or near-zero scalar");
+        }
         return Vector3D(data_[0] / scalar,
                        data_[1] / scalar,
                        data_[2] / scalar);
@@ -299,6 +304,11 @@ public:
      * @brief Access element
      */
     double& operator()(size_t i, size_t j) {
+        if (i >= rows_ || j >= cols_) {
+            throw std::out_of_range("Matrix index out of range: (" + std::to_string(i) +
+                                   ", " + std::to_string(j) + ") for matrix of size (" +
+                                   std::to_string(rows_) + ", " + std::to_string(cols_) + ")");
+        }
         return data_[i * cols_ + j];
     }
 
@@ -306,6 +316,11 @@ public:
      * @brief Access element (const)
      */
     const double& operator()(size_t i, size_t j) const {
+        if (i >= rows_ || j >= cols_) {
+            throw std::out_of_range("Matrix index out of range: (" + std::to_string(i) +
+                                   ", " + std::to_string(j) + ") for matrix of size (" +
+                                   std::to_string(rows_) + ", " + std::to_string(cols_) + ")");
+        }
         return data_[i * cols_ + j];
     }
 

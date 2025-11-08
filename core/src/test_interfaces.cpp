@@ -48,9 +48,9 @@ public:
     std::string getName() const override { return "TestSolver"; }
     void setTolerance(double /*tol*/) override {}
     double getTolerance() const override { return 1e-6; }
-    void setMaxIterations(int /*maxIter*/) override {}
-    int getMaxIterations() const override { return 100; }
-    int getIterationCount() const override { return 0; }
+    void setMaxIterations(size_t /*maxIter*/) override {}
+    size_t getMaxIterations() const override { return 100; }
+    size_t getIterationCount() const override { return 0; }
     double getResidual() const override { return 0.0; }
     void reset() override {}
     size_t getNumDOFs() const override { return 0; }
