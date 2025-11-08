@@ -75,6 +75,14 @@ See [PROGRESS_SUMMARY.md](PROGRESS_SUMMARY.md) and [진행상황_요약.md](진�
 - ✅ GPU kernel auto-tuning
 - ✅ Comprehensive benchmarks and examples
 
+### HPC & MPI Parallelization (v6.0.0-alpha5) ⭐ NEW
+- ✅ MPI-parallel diffusion solver (1D, 2D)
+- ✅ Domain decomposition with ghost cell communication
+- ✅ Performance monitoring (compute vs communication time)
+- ✅ Scaling analysis tools (strong/weak scaling)
+- ✅ HPC cluster integration (SLURM, PBS/Torque)
+- ✅ See [MPI_GUIDE.md](MPI_GUIDE.md) for details
+
 ## Architecture
 
 ```

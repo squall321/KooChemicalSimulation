@@ -1,5 +1,6 @@
 # Parallel computing module
 # Phase 41-45: MPI and HPC support (v4.0.0-alpha1)
+# Priority D1: MPI Parallelization (v6.0.0-alpha5)
 
 # Header files
 set(PARALLEL_HEADERS
@@ -8,17 +9,24 @@ set(PARALLEL_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/include/parallel/linalg/ParallelVector.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/parallel/io/ParallelIO.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/parallel/balance/LoadBalancing.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/parallel/solver/MPIDiffusionSolver.h
 )
 
-# Header-only library
-add_library(koo_parallel INTERFACE)
-target_include_directories(koo_parallel INTERFACE
+# Source files
+set(PARALLEL_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/solver/MPIDiffusionSolver1D.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/solver/MPIDiffusionSolver2D.cpp
+)
+
+# Create library (now with sources)
+add_library(koo_parallel ${PARALLEL_SOURCES} ${PARALLEL_HEADERS})
+target_include_directories(koo_parallel PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
 
 # Link dependencies
-target_link_libraries(koo_parallel INTERFACE koo_core koo_utils)
+target_link_libraries(koo_parallel PUBLIC koo_core koo_utils koo_physics)
 
 # Check for MPI
 if(ENABLE_MPI)

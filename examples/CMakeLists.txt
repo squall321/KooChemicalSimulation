@@ -43,4 +43,37 @@ set_target_properties(full_simulation_example PROPERTIES
     CXX_STANDARD_REQUIRED ON
 )
 
-message(STATUS "Examples configured (Phase 48, 70 complete - v6.0.0-alpha4)")
+# MPI examples (Priority D1 - v6.0.0-alpha5)
+if(ENABLE_MPI AND MPI_FOUND)
+    # MPI 1D diffusion example
+    add_executable(mpi_diffusion_1d_example mpi_diffusion_1d_example.cpp)
+    target_link_libraries(mpi_diffusion_1d_example PRIVATE
+        koo_core
+        koo_utils
+        koo_physics
+        koo_parallel
+        koo_io
+    )
+    set_target_properties(mpi_diffusion_1d_example PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+    )
+
+    # MPI 2D diffusion example
+    add_executable(mpi_diffusion_2d_example mpi_diffusion_2d_example.cpp)
+    target_link_libraries(mpi_diffusion_2d_example PRIVATE
+        koo_core
+        koo_utils
+        koo_physics
+        koo_parallel
+        koo_io
+    )
+    set_target_properties(mpi_diffusion_2d_example PROPERTIES
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+    )
+
+    message(STATUS "MPI examples configured (Priority D1)")
+endif()
+
+message(STATUS "Examples configured (Phase 48, 70, D1 complete - v6.0.0-alpha5)")
