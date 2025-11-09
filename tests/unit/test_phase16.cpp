@@ -134,6 +134,7 @@ void testThermoData() {
 
     // Set NASA polynomial coefficients (simplified example)
     thermo.lowT = {3.298677, 0.0014082, -3.963222e-06, 5.641515e-09, -2.444855e-12, -1020.9, 3.950372};
+    thermo.highT = {2.92664, 0.0014879, -5.68476e-07, 1.0097e-10, -6.753e-15, -922.8, 5.980528};
 
     N2.setThermoData(thermo);
 
