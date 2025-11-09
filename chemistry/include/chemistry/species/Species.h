@@ -71,6 +71,15 @@ struct ThermoData {
      * @return Cp [J/(mol·K)]
      */
     double getCp(double T) const {
+        if (lowT.size() != 7 || highT.size() != 7) {
+            throw std::runtime_error("NASA polynomial coefficients must have exactly 7 elements, got lowT=" +
+                                   std::to_string(lowT.size()) + ", highT=" + std::to_string(highT.size()));
+        }
+        if (T < Tmin || T > Tmax) {
+            throw std::out_of_range("Temperature " + std::to_string(T) +
+                                   " K is outside valid range [" + std::to_string(Tmin) +
+                                   ", " + std::to_string(Tmax) + "] K");
+        }
         const auto& a = (T <= Tmid) ? lowT : highT;
         double T2 = T * T;
         double T3 = T2 * T;
@@ -84,6 +93,15 @@ struct ThermoData {
      * @return H [J/mol]
      */
     double getH(double T) const {
+        if (lowT.size() != 7 || highT.size() != 7) {
+            throw std::runtime_error("NASA polynomial coefficients must have exactly 7 elements, got lowT=" +
+                                   std::to_string(lowT.size()) + ", highT=" + std::to_string(highT.size()));
+        }
+        if (T < Tmin || T > Tmax) {
+            throw std::out_of_range("Temperature " + std::to_string(T) +
+                                   " K is outside valid range [" + std::to_string(Tmin) +
+                                   ", " + std::to_string(Tmax) + "] K");
+        }
         const auto& a = (T <= Tmid) ? lowT : highT;
         double T2 = T * T;
         double T3 = T2 * T;
@@ -97,6 +115,15 @@ struct ThermoData {
      * @return S [J/(mol·K)]
      */
     double getS(double T) const {
+        if (lowT.size() != 7 || highT.size() != 7) {
+            throw std::runtime_error("NASA polynomial coefficients must have exactly 7 elements, got lowT=" +
+                                   std::to_string(lowT.size()) + ", highT=" + std::to_string(highT.size()));
+        }
+        if (T < Tmin || T > Tmax) {
+            throw std::out_of_range("Temperature " + std::to_string(T) +
+                                   " K is outside valid range [" + std::to_string(Tmin) +
+                                   ", " + std::to_string(Tmax) + "] K");
+        }
         const auto& a = (T <= Tmid) ? lowT : highT;
         double T2 = T * T;
         double T3 = T2 * T;

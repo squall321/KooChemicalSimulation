@@ -166,23 +166,23 @@ public:
      * For iterative solvers, sets the maximum number of iterations allowed.
      *
      * @param maxIter Maximum iterations (must be positive)
-     * @throws std::invalid_argument if maxIter <= 0
+     * @throws std::invalid_argument if maxIter == 0
      */
-    virtual void setMaxIterations(int maxIter) = 0;
+    virtual void setMaxIterations(size_t maxIter) = 0;
 
     /**
      * @brief Get maximum number of iterations
      *
      * @return Maximum iterations
      */
-    virtual int getMaxIterations() const = 0;
+    virtual size_t getMaxIterations() const = 0;
 
     /**
      * @brief Get number of iterations performed in last solve
      *
      * @return Number of iterations (0 for direct solvers)
      */
-    virtual int getIterationCount() const = 0;
+    virtual size_t getIterationCount() const = 0;
 
     /**
      * @brief Get final residual from last solve

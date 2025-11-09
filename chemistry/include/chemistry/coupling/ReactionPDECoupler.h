@@ -62,10 +62,9 @@ public:
           couplingMode_(CouplingMode::OPERATOR_SPLITTING) {
 
         // Initialize concentration field from reaction system
-        auto speciesNames = std::vector<std::string>(
-            reactionSystem.getReactionManager().getAllSpecies().begin(),
-            reactionSystem.getReactionManager().getAllSpecies().end()
-        );
+        // IMPORTANT: Store getAllSpecies() result to avoid creating multiple temporary objects
+        auto allSpecies = reactionSystem.getReactionManager().getAllSpecies();
+        auto speciesNames = std::vector<std::string>(allSpecies.begin(), allSpecies.end());
         concentrationField_.setSpecies(speciesNames);
 
         // Initialize reaction term

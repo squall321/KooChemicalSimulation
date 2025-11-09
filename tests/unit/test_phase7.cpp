@@ -44,11 +44,13 @@ int main() {
     // Test MeshQuality
     std::cout << "Testing MeshQuality...\n";
     auto eq = MeshQuality::computeElementQuality(tri, *mesh);
+    (void)eq;  // Used in assert
     assert(eq.isValid && "Element should be valid");
     assert(eq.volume > 0.4 && eq.volume < 0.6 && "Triangle area should be ~0.5");
     std::cout << "✓ Element quality computation works\n";
 
     auto report = MeshQuality::analyzeMesh(*mesh);
+    (void)report;  // Used in assert
     assert(report.numInvalidElements == 0 && "No invalid elements");
     std::cout << "✓ Mesh quality analysis works\n";
 

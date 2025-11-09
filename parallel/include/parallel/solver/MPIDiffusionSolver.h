@@ -28,6 +28,7 @@
 #include <memory>
 #include <string>
 #include <chrono>
+#include <functional>
 
 namespace koo {
 namespace parallel {

@@ -318,8 +318,8 @@ public:
      * @brief Get Jacobian at equilibrium
      */
     void getJacobianAtEquilibrium(double& fu, double& fv, double& gu, double& gv) const {
-        double ustar = A_;
-        double vstar = B_ / A_;
+        // Equilibrium point: u* = A, v* = B/A
+        // (variables calculated but not used in current implementation)
 
         fu = B_ - 1.0;
         fv = A_ * A_;

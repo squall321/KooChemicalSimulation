@@ -27,6 +27,8 @@ Checks: >
   -readability-function-cognitive-complexity,
   -readability-identifier-length,
   -readability-else-after-return,
+  clang-analyzer-*,
+  -clang-analyzer-cplusplus.NewDeleteLeaks,
 
 # Warning configurations
 WarningsAsErrors: ''

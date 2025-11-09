@@ -122,6 +122,9 @@ public:
         double T, double C = 0.0) const {
 
         double D = diffCoeff_->calculate(T, C);
+        if (D <= 0.0) {
+            throw std::runtime_error("Diffusion coefficient must be positive, got D = " + std::to_string(D));
+        }
         if (D < 1.0e-30) {
             throw std::runtime_error("Diffusion coefficient too small");
         }
@@ -162,6 +165,9 @@ public:
         double T, double C = 0.0) const {
 
         double D = diffCoeff_->calculate(T, C);
+        if (D <= 0.0) {
+            throw std::runtime_error("Diffusion coefficient must be positive, got D = " + std::to_string(D));
+        }
         if (D < 1.0e-30) {
             throw std::runtime_error("Diffusion coefficient too small");
         }

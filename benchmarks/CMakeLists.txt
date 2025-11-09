@@ -39,4 +39,44 @@ else()
     message(STATUS "  Enable GPU with: cmake -DENABLE_GPU=ON ..")
 endif()
 
+# ============================================
+# CPU Benchmark Suite (Phase 70)
+# ============================================
+add_executable(cpu_benchmark_suite cpu_benchmark_suite.cpp)
+
+target_link_libraries(cpu_benchmark_suite PRIVATE
+    koo_core
+    koo_mesh
+    koo_chemistry
+    koo_physics
+    koo_utils
+)
+
+target_compile_features(cpu_benchmark_suite PRIVATE cxx_std_17)
+
+# Installation
+install(TARGETS cpu_benchmark_suite
+    RUNTIME DESTINATION bin
+)
+
+message(STATUS "  CPU Benchmark suite: Enabled")
+
+# ============================================
+# MPI Domain Decomposition Benchmark
+# ============================================
+add_executable(mpi_domain_decomposition_benchmark mpi_domain_decomposition_benchmark.cpp)
+
+target_link_libraries(mpi_domain_decomposition_benchmark PRIVATE
+    koo_core
+)
+
+target_compile_features(mpi_domain_decomposition_benchmark PRIVATE cxx_std_17)
+
+# Installation
+install(TARGETS mpi_domain_decomposition_benchmark
+    RUNTIME DESTINATION bin
+)
+
+message(STATUS "  MPI Domain Decomposition Benchmark: Enabled")
+
 message(STATUS "Benchmarks configured successfully")

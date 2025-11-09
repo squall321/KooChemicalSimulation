@@ -163,6 +163,7 @@ void testNeumannBC() {
     auto bc4 = neumann::makeExponentialDecay("decay", 23, 1000.0, 0.1);
     assert(isClose(bc4->evaluate(0, 0, 0, 0.0), 1000.0));
     double expected = 1000.0 * std::exp(-0.1 * 5.0);
+    (void)expected;  // Used in assert
     assert(isClose(bc4->evaluate(0, 0, 0, 5.0), expected));
     std::cout << "  ✓ Exponential decay BC works\n";
 
@@ -319,6 +320,7 @@ void testBCManager() {
 
     // Test remove
     bool removed = manager.removeBC("inlet");
+    (void)removed;  // Used in assert
     assert(removed);
     assert(manager.getNumBCs() == 3);
     assert(!manager.hasBC("inlet"));
@@ -342,6 +344,7 @@ void testBCManager() {
     } catch (const std::runtime_error&) {
         caught = true;
     }
+    (void)caught;  // Used in assert
     assert(caught);
     std::cout << "  ✓ Duplicate name detection works\n";
 }

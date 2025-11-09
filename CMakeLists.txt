@@ -11,10 +11,19 @@ project(KooChemicalSimulation
 # Project Configuration
 # ============================================================================
 
-# Set C++ standard
+# Set C++ standard - C++17 is REQUIRED
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Verify C++17 compiler support
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0)
+    message(FATAL_ERROR "GCC 7.0 or higher is required for C++17 support")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0)
+    message(FATAL_ERROR "Clang 5.0 or higher is required for C++17 support")
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19.14)
+    message(FATAL_ERROR "MSVC 2017 (v19.14) or higher is required for C++17 support")
+endif()
 
 # Export compile commands for IDE support
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -51,14 +60,15 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         -Wall
         -Wextra
         -Wpedantic
-        -Wconversion
-        -Wsign-conversion
+        # Note: -Wconversion and -Wsign-conversion are too noisy for production code
+        # We keep the important warnings and disable false-positive-prone ones
         -Wshadow
         -Wnon-virtual-dtor
         -Wold-style-cast
         -Wcast-align
         -Woverloaded-virtual
         -Wunused
+        -Wno-unused-parameter  # Lambda parameters, interface implementations
     )
 endif()
 

@@ -66,6 +66,7 @@ void testDomain() {
 
     // Test element removal
     bool removed = domain.removeElement(2);
+    (void)removed;  // Used in assert
     assert(removed);
     assert(!domain.hasElement(2));
     assert(domain.getNumElements() == 7);
@@ -177,6 +178,7 @@ void testSubDomain() {
 
     // Test neighbor removal
     bool removed = subdomain.removeNeighbor(3);
+    (void)removed;  // Used in assert
     assert(removed);
     assert(!subdomain.hasNeighbor(3));
     assert(subdomain.getNumNeighbors() == 1);
@@ -206,6 +208,7 @@ void testSubDomain() {
 
     assert(subdomain.overlaps(subdomain2));
     size_t overlap = subdomain.computeOverlap(subdomain2);
+    (void)overlap;  // Used in assert
     assert(overlap == 2);  // Elements 2 and 3
     std::cout << "  ✓ Overlap detection works\n";
 
@@ -279,6 +282,7 @@ void testDomainManager() {
 
     // Test remove domain
     bool removed = manager.removeDomain(domain2->getId());
+    (void)removed;  // Used in assert
     assert(removed);
     assert(manager.getNumDomains() == 2);
     assert(!manager.hasDomain(domain2->getId()));

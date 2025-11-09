@@ -189,6 +189,7 @@ void MPIDiffusionSolver1DOptimized::stepExplicitOptimized(double dt) {
     auto commStart = std::chrono::high_resolution_clock::now();
     auto requests = startGhostExchange();
     auto commInitEnd = std::chrono::high_resolution_clock::now();
+    (void)commInitEnd;  // Reserved for future performance profiling
 
     // 2. Compute interior points (while communication happens)
     auto compStart = std::chrono::high_resolution_clock::now();
@@ -197,6 +198,7 @@ void MPIDiffusionSolver1DOptimized::stepExplicitOptimized(double dt) {
 
     // 3. Wait for ghost exchange to complete
     auto commWaitStart = std::chrono::high_resolution_clock::now();
+    (void)commWaitStart;  // Reserved for future performance profiling
     completeGhostExchange(requests);
     applyBoundaryConditions();
     auto commEnd = std::chrono::high_resolution_clock::now();
