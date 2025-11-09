@@ -176,24 +176,27 @@ public:
 
 private:
     /**
-     * @brief Compute process grid dimensions
+     * @brief Compute process grid dimensions using balanced factorization
+     *
+     * This is a simplified implementation of MPI_Dims_create logic.
+     * It tries to balance the dimensions as much as possible for better
+     * load balancing and minimal communication overhead.
      */
     void computeProcessGrid() {
         int nprocs = comm_.getSize();
 
-        // Simple factorization for now
-        // TODO: Use MPI_Dims_create for better decomposition
-        npz_ = 1;
-        npy_ = 1;
-        npx_ = nprocs;
+        // Initialize dimensions
+        npx_ = 0;
+        npy_ = 0;
+        npz_ = 0;
 
-        // Try to balance dimensions
-        if (nprocs >= 4) {
-            npz_ = static_cast<int>(std::cbrt(nprocs));
-            int remaining = nprocs / npz_;
-            npy_ = static_cast<int>(std::sqrt(remaining));
-            npx_ = nprocs / (npy_ * npz_);
-        }
+        // Use balanced factorization (similar to MPI_Dims_create)
+        std::array<int, 3> dims = {0, 0, 0};
+        balancedFactorization(nprocs, dims);
+
+        npx_ = dims[0];
+        npy_ = dims[1];
+        npz_ = dims[2];
 
         // Compute process coordinates
         int rank = comm_.getRank();
@@ -201,6 +204,54 @@ private:
         int remainder = rank % (npx_ * npy_);
         processCoords_[1] = remainder / npx_;
         processCoords_[0] = remainder % npx_;
+    }
+
+    /**
+     * @brief Balanced factorization algorithm
+     *
+     * Factorizes nprocs into 3 dimensions trying to keep them as balanced
+     * as possible. This minimizes surface area to volume ratio, reducing
+     * communication overhead.
+     *
+     * @param nprocs Number of processes
+     * @param dims Output dimensions [out]
+     */
+    void balancedFactorization(int nprocs, std::array<int, 3>& dims) {
+        // Start with all dimensions set to 1
+        dims[0] = dims[1] = dims[2] = 1;
+
+        int remaining = nprocs;
+
+        // Factor out powers of 2, 3, 5 (common processor counts)
+        // and distribute them to balance the dimensions
+        while (remaining > 1) {
+            // Find the smallest dimension
+            int min_idx = 0;
+            int min_val = dims[0];
+            for (int i = 1; i < 3; ++i) {
+                if (dims[i] < min_val) {
+                    min_val = dims[i];
+                    min_idx = i;
+                }
+            }
+
+            // Try to factor remaining
+            bool factored = false;
+            for (int factor : {2, 3, 5, 7}) {
+                if (remaining % factor == 0) {
+                    dims[min_idx] *= factor;
+                    remaining /= factor;
+                    factored = true;
+                    break;
+                }
+            }
+
+            // If no small factor found, use the remaining value
+            if (!factored) {
+                dims[min_idx] *= remaining;
+                remaining = 1;
+            }
+        }
     }
 
     /**

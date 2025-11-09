@@ -219,10 +219,13 @@ public:
 
     /**
      * @brief Normalize the vector
+     * @throws std::runtime_error if vector length is too small
      */
     Vector3D normalized() const {
         double len = norm();
-        if (len < 1e-15) return Vector3D(0, 0, 0);
+        if (len < 1e-15) {
+            throw std::runtime_error("Cannot normalize zero or near-zero vector (length = " + std::to_string(len) + ")");
+        }
         return *this / len;
     }
 
