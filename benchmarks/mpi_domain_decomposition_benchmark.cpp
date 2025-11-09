@@ -3,16 +3,17 @@
  * @brief MPI Domain Decomposition Performance Benchmark
  *
  * Compares performance of balanced vs simple domain decomposition
+ * This is a standalone benchmark that doesn't require MPI to be enabled.
+ * It demonstrates the theoretical improvements of balanced factorization.
  */
 
-#include "parallel/domain/DomainDecomposition.h"
-#include "parallel/mpi/MPIWrapper.h"
 #include <iostream>
 #include <iomanip>
 #include <chrono>
 #include <cmath>
-
-using namespace koo::parallel;
+#include <array>
+#include <vector>
+#include <string>
 
 struct BenchmarkResult {
     int nprocs;
@@ -22,8 +23,11 @@ struct BenchmarkResult {
     bool isBalanced;
 
     void print() const {
+        std::string dimStr = std::to_string(dims[0]) + "×" +
+                            std::to_string(dims[1]) + "×" +
+                            std::to_string(dims[2]);
         std::cout << std::setw(8) << nprocs
-                  << std::setw(12) << (dims[0] << "×" << dims[1] << "×" << dims[2])
+                  << std::setw(12) << dimStr
                   << std::setw(15) << std::fixed << std::setprecision(2) << setupTime
                   << std::setw(18) << surfaceToVolume
                   << std::setw(12) << (isBalanced ? "Yes" : "No")
