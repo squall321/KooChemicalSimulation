@@ -149,6 +149,7 @@ void testMemoryLeakDetection() {
     memMgr.deallocate(leak2);
 
     auto statsClean = memMgr.getStats();
+    (void)statsClean;  // Used in assert, suppress unused warning in Release mode
     assert(!statsClean.hasLeaks() && "Leaks should be cleaned up");
 }
 
@@ -545,6 +546,7 @@ void testResourceGuard() {
         });
 
         int* released = guard.release();
+        (void)released;  // Used in assert
         assert(released == &resourceValue && "Should return resource");
 
     } // guard destroyed but ownership released

@@ -104,9 +104,11 @@ void testConfigTypeSafety() {
 
     // Test getOrDefault
     int val1 = config->getOrDefault("int_value", 0);
+    (void)val1;  // Used in assert
     assert(val1 == 42 && "Should get actual value");
 
     int val2 = config->getOrDefault("nonexistent_int", 99);
+    (void)val2;  // Used in assert
     assert(val2 == 99 && "Should get default value");
 
     // Test arrays
@@ -200,6 +202,7 @@ void testConfigDefaults() {
 
     // Reset all to defaults
     size_t resetCount = config->resetAllToDefaults();
+    (void)resetCount;  // Used in assert
     assert(resetCount == 4 && "Should reset 4 entries");
 
     assert(config->get<int>("mesh.refine") == 1 && "Should have default");
